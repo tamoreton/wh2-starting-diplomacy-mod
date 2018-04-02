@@ -5,9 +5,11 @@ function hamskii_script()
 
         -- Force a certain stance of a faction towards another
         -- force_diplomacy("faction_key", "target_faction", "type listed below", offer, accept)
+        -- force_diplomacy("wh_main_emp_middenland", "wh_main_emp_empire", "vassal", true, true);
+        -- force_diplomacy_new(...);
+        -- force_make_vassal("wh_main_emp_middenland", "wh_main_emp_empire");
 
-        force_diplomacy("wh_main_emp_middenland", "wh_main_emp_empire", "vassal", true, true);
-        -- TODO: Try force_diplomacy_new if force_diplomacy doesn't work
+        scripting.game_interface:force_make_vassal("wh_main_emp_middenland", "wh_main_emp_empire");
     else
         -- call functions here that you want to fire every time you load the game.
     end;
