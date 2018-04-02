@@ -4,12 +4,13 @@ function hamskii_script()
         output("==========HAMSKII IS ACTIVE==========");
 
         -- Force a certain stance of a faction towards another
+        -- v retain these for now until force_make_vassal works but this might just be for enabling/disabling certain diplomacy
         -- force_diplomacy("faction_key", "target_faction", "type listed below", offer, accept)
         -- force_diplomacy("wh_main_emp_middenland", "wh_main_emp_empire", "vassal", true, true);
         -- force_diplomacy_new(...);
         -- force_make_vassal("wh_main_emp_middenland", "wh_main_emp_empire");
 
-        scripting.game_interface:force_make_vassal("wh_main_emp_middenland", "wh_main_emp_empire");
+        scripting.game_interface:force_make_vassal("wh_main_emp_empire", "wh_main_emp_middenland");
     else
         -- call functions here that you want to fire every time you load the game.
     end;
