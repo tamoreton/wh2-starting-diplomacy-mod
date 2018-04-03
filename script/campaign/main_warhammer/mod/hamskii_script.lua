@@ -21,9 +21,7 @@ function hamskii_script()
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_karak_kadrin");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_karak_norn");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_karak_ziflin");
-        cm:force_diplomacy_new("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak", "non aggression pact", true, true, true);
-        cm:force_diplomacy_new("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak", "soft military access", true, true, true);
-        cm:force_diplomacy_new("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak", "trade agreement", true, true, true);
+        cm:force_make_trade_agreement("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_zhufbar");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh2_main_dwf_greybeards_prospectors");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh2_main_dwf_spine_of_sotek_dwarfs");
