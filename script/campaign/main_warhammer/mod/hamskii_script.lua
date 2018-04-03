@@ -1,16 +1,17 @@
 function hamskii_script()
     if cm:is_new_game() then
         -- call your script functions here that you only want to run at the start of a campaign.
-        output("==========HAMSKII IS ACTIVE==========");
-
-        -- Force a certain stance of a faction towards another
-        -- v retain these for now until force_make_vassal works but this might just be for enabling/disabling certain diplomacy
-        -- force_diplomacy("faction_key", "target_faction", "type listed below", offer, accept)
-        -- force_diplomacy("wh_main_emp_middenland", "wh_main_emp_empire", "vassal", true, true);
-        -- force_diplomacy_new(...);
-        -- force_make_vassal("wh_main_emp_middenland", "wh_main_emp_empire");
-
-        scripting.game_interface:force_make_vassal("wh_main_emp_empire", "wh_main_emp_middenland");
+        output("==========HAMSKII MOD IS ACTIVE==========");
+        -- Empire
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_middenland");
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_averland");
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_talabecland");
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_ostland");
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_nordland");
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_hochland");
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_ostermark");
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_stirland");
+        cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_wissenland");
     else
         -- call functions here that you want to fire every time you load the game.
     end;
