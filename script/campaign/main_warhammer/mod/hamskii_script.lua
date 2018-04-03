@@ -39,7 +39,10 @@ function hamskii_script()
 
         -- TODO: Beastmen
 
-        -- TODO: Wood Elves
+        -- Wood Elves
+        cm:force_make_vassal("wh_dlc05_wef_wood_elves", "wh_dlc05_wef_argwylon");
+        cm:force_make_vassal("wh_dlc05_wef_wood_elves", "wh_dlc05_wef_torgovann");
+        cm:force_make_vassal("wh_dlc05_wef_wood_elves", "wh_dlc05_wef_wydrioth");
 
         -- TODO: Bretonnia
 
