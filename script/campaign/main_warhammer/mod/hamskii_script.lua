@@ -24,7 +24,36 @@ function hamskii_script()
         cm:force_make_trade_agreement("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_zhufbar");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh2_main_dwf_greybeards_prospectors");
-        cm:force_make_vassal("wh_main_dwf_dwarfs", "wh2_main_dwf_spine_of_sotek_dwarfs");
+
+        -- TODO: Greenskins
+
+        -- Vampire Counts
+        cm:force_declare_war("wh_main_vmp_schwartzhafen", "wh_main_vmp_rival_sylvanian_vamps"); -- Von Carstein
+        cm:transfer_region_to_faction("wh_main_eastern_sylvania_eschen", "wh_main_vmp_vampire_counts");
+        cm:transfer_region_to_faction("wh_main_eastern_sylvania_waldenhof", "wh_main_vmp_vampire_counts");
+        cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
+        cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
+        cm:force_make_vassal("wh_main_vmp_schwartzhafen", "wh_main_vmp_mousillon");
+
+        -- TODO: Warriors of Chaos
+
+        -- TODO: Beastmen
+
+        -- TODO: Wood Elves
+
+        -- TODO: Bretonnia
+
+        -- TODO: Norsca
+
+        -- TODO: Lizardmen
+
+        -- TODO: Dark Elves
+
+        -- TODO: High Elves
+
+        -- TODO: Skaven
+
+        -- TODO: Tomb Kings
     else
         -- call functions here that you want to fire every time you load the game.
     end;
