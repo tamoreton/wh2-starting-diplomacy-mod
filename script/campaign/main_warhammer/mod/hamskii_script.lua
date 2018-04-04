@@ -68,44 +68,51 @@ function hamskii_script()
 
         -- High Elves
         output("==========DEBUG: HIGH ELVES==========");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_avelorn");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_caledor");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_chrace");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_cothique");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_ellyrion");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_nagarythe");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_saphery");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_tiranoc");
-        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_yvresse");
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_avelorn"); -- Lothern
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_caledor");
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_chrace");
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_cothique");
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_ellyrion");
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_nagarythe");
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_saphery");
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_tiranoc");
+        cm:force_make_trade_agreement("wh2_main_hef_eataine", "wh2_main_hef_yvresse");
         cm:force_make_vassal("wh2_main_hef_saphery", "wh2_main_hef_order_of_loremasters");  
 
         -- Dark Elves
         output("==========DEBUG: DARK ELVES==========");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_cult_of_pleasure");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_bleak_holds");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_clar_karond");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_cult_of_excess");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_deadwood_sentinels");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_ghrond");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_hag_graef");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_har_ganeth");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_karond_kar");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_scourge_of_khaine");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wwh2_main_def_ssildra_tor");
-        cm:force_make_vassal("wh2_main_def_dark_elves", "wh2_main_def_the_forgebound");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_cult_of_pleasure");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_bleak_holds");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_clar_karond");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_cult_of_excess");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_deadwood_sentinels");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_ghrond");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_hag_graef");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_har_ganeth");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_karond_kar");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_scourge_of_khaine");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wwh2_main_def_ssildra_tor");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_the_forgebound");
 
-        -- TODO: Lizardmen
+        --  Lizardmen
+        output("==========DEBUG: LIZARDMEN==========");
+        cm:force_make_trade_agreement("wh2_main_lzd_hexoatl", "wh2_main_lzd_itza");
+        cm:force_make_trade_agreement("wh2_main_lzd_hexoatl", "wh2_main_lzd_sentinels_of_xeti");
+        cm:force_make_trade_agreement("wh2_main_lzd_hexoatl", "wh2_main_lzd_teotiqua");
+        cm:force_make_trade_agreement("wh2_main_lzd_hexoatl", "wh2_main_lzd_tlaxtlan");
+        cm:force_make_trade_agreement("wh2_main_lzd_hexoatl", "wh2_main_lzd_xlanhuapec");
+        cm:force_make_vassal("wh2_main_lzd_hexoatl", "wh2_main_lzd_last_defenders");
 
         -- TODO: Skaven
 
-        -- TODO: Tomb Kings
+        -- Tomb Kings
         output("==========DEBUG: TOMB KINGS==========");
-        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_lybaras");
-        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_followers_of_nagash");
-        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_exiles_of_nehek");
-        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_numas");
-        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_dune_kingdoms");
-        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_rakaph_dynasty");
+        cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_lybaras");
+        cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_followers_of_nagash");
+        cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_exiles_of_nehek");
+        cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_numas");
+        cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_dune_kingdoms");
+        cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_rakaph_dynasty");
 
     else
         -- call functions here that you want to fire every time you load the game.
