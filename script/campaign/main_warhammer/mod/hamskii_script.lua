@@ -2,7 +2,7 @@ function hamskii_script()
     if cm:is_new_game() then
         -- call your script functions here that you only want to run at the start of a campaign.
         output("==========HAMSKII MOD IS ACTIVE==========");
-        -- Empire
+        -- Empire Provinces
         cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_middenland");
         cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_averland");
         cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_talabecland");
@@ -13,7 +13,7 @@ function hamskii_script()
         cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_stirland");
         cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_wissenland");
 
-        -- Dwarfs
+        -- Dwarf Realms
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_barak_varr");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_karak_azul");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_karak_hirn");
@@ -25,7 +25,7 @@ function hamskii_script()
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh_main_dwf_zhufbar");
         cm:force_make_vassal("wh_main_dwf_dwarfs", "wh2_main_dwf_greybeards_prospectors");
 
-        -- TODO: Greenskins
+        -- TODO: Greenskin Tribes
 
         -- Vampire Counts
         cm:force_declare_war("wh_main_vmp_schwartzhafen", "wh_main_vmp_rival_sylvanian_vamps"); -- Von Carstein
@@ -44,15 +44,28 @@ function hamskii_script()
         cm:force_make_vassal("wh_dlc05_wef_wood_elves", "wh_dlc05_wef_torgovann");
         cm:force_make_vassal("wh_dlc05_wef_wood_elves", "wh_dlc05_wef_wydrioth");
 
-        -- TODO: Bretonnia
+        -- Bretonnian Kingdoms
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_bordeleaux");
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_carcassonne");
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_artois");
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_bastonne");
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_lyonesse");
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_parravon");
+        -- cm:force_make_vassal("wh_main_brt_bretonnia", "wh2_main_brt_knights_of_origo");
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh2_main_brt_knights_of_the_flame");
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh2_main_brt_thegans_crusaders");        
 
-        -- TODO: Norsca
+        -- TODO: Norscan Tribes
 
-        -- TODO: Lizardmen
+        -- TODO: Kislev
+
+        -- TODO: Southern Realms
+
+        -- TODO: High Elves
 
         -- TODO: Dark Elves
 
-        -- TODO: High Elves
+        -- TODO: Lizardmen
 
         -- TODO: Skaven
 
