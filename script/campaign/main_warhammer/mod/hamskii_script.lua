@@ -37,6 +37,7 @@ function hamskii_script()
         cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
         cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
         cm:force_make_vassal("wh_main_vmp_schwartzhafen", "wh_main_vmp_mousillon");
+        --[[
 
         -- TODO: Warriors of Chaos
 
@@ -113,7 +114,7 @@ function hamskii_script()
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_numas");
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_dune_kingdoms");
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_rakaph_dynasty");
-
+        --]]
     else
         -- call functions here that you want to fire every time you load the game.
     end;
