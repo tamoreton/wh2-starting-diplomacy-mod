@@ -99,6 +99,14 @@ function hamskii_script()
         -- TODO: Skaven
 
         -- TODO: Tomb Kings
+        output("==========DEBUG: TOMB KINGS==========");
+        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_lybaras");
+        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_followers_of_nagash");
+        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_exiles_of_nehek");
+        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_numas");
+        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_dune_kingdoms");
+        cm:force_make_vassal("wh2_dlc09_sc_tmb_tomb_kings", "wh2_dlc09_tmb_rakaph_dynasty");
+
     else
         -- call functions here that you want to fire every time you load the game.
     end;
