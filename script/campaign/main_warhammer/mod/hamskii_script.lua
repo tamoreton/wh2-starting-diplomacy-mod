@@ -51,7 +51,7 @@ function hamskii_script()
         cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_bastonne");
         cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_lyonesse");
         cm:force_make_vassal("wh_main_brt_bretonnia", "wh_main_brt_parravon");
-        -- cm:force_make_vassal("wh_main_brt_bretonnia", "wh2_main_brt_knights_of_origo");
+        cm:force_make_vassal("wh_main_brt_bretonnia", "wh2_main_brt_knights_of_origo");
         cm:force_make_vassal("wh_main_brt_bretonnia", "wh2_main_brt_knights_of_the_flame");
         cm:force_make_vassal("wh_main_brt_bretonnia", "wh2_main_brt_thegans_crusaders");        
 
@@ -61,7 +61,19 @@ function hamskii_script()
 
         -- TODO: Southern Realms
 
-        -- TODO: High Elves
+        -- High Elves
+        -- Not sure whether this should be wh2_main_hef_high_elves or wh2_main_hef_eataine
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_avelorn");
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_caledor");
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_chrace");
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_cothique");
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_ellyrion");
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_nagarythe");
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_saphery");
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_tiranoc");
+        cm:force_make_trade_agreement("wh2_main_hef_high_elves", "wh2_main_hef_yvresse");
+        cm:force_make_vassal("wh2_main_hef_saphery", "wh2_main_hef_order_of_loremasters");  
+
 
         -- TODO: Dark Elves
 
