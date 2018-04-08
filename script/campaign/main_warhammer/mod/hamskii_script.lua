@@ -1,10 +1,17 @@
--- TODO: Vassalisation function that simulates vassalisation by looping through enemies of vassalised factions and forcing peace if the parent faction is not already at war
--- Dig around scripts and see if there's a function that already does this
--- Split mod into various submods
+-- TODO: Vassalisation function that simulates vassalisation calling force_make_vassal, forcing a
+-- trade agreement if one is available, and then looping through the vassalised faction to force
+-- peace with any faction that the new master is not already at war with.
+-- Have a flag on the function that causes the parent faction to declare war on the faction instead.
+-- N.B. it might be worth making sure that other vassals also declare war/make peace when the
+-- force_declare_war or force_make_peace functions are called.
+-- of making peace.
+-- TODO: Check existing scripts to see how vassalisation is already handled.
+-- TODO: Check existing scripts to see how military alliances work.
 
 function hamskii_script()
     if cm:is_new_game() then
         -- call your script functions here that you only want to run at the start of a campaign.
+        output("==== hamskii's Loreful Empires mod ====");
         output("#### Empire Provinces ####");
         cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_middenland");
         cm:force_make_vassal("wh_main_emp_empire", "wh_main_emp_averland");
@@ -31,7 +38,7 @@ function hamskii_script()
         output("#### Greenskin Tribes ####"); -- TODO
 
         output("#### Vampire Counts ####");
-        --cm:force_declare_war("wh_main_vmp_schwartzhafen", "wh_main_vmp_rival_sylvanian_vamps");
+        --cm:force_declare_war("wh_main_vmp_schwartzhafen", "wh_main_vmp_rival_sylvanian_vamps", true, true);
         cm:transfer_region_to_faction("wh_main_eastern_sylvania_eschen", "wh_main_vmp_vampire_counts");
         cm:transfer_region_to_faction("wh_main_eastern_sylvania_waldenhof", "wh_main_vmp_vampire_counts");
         cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
@@ -87,7 +94,7 @@ function hamskii_script()
         cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_har_ganeth");
         cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_karond_kar");
         cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_scourge_of_khaine");
-        cm:force_make_vassal("wh2_main_def_naggarond", "wwh2_main_def_ssildra_tor");
+        cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_ssildra_tor");
         cm:force_make_vassal("wh2_main_def_naggarond", "wh2_main_def_the_forgebound");
 
         output("#### Lizardmen ####"); -- TODO
@@ -102,11 +109,15 @@ function hamskii_script()
 
         output("#### Tomb Kings ####"); -- TODO
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_lybaras");
-        cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_followers_of_nagash");
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_exiles_of_nehek");
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_numas");
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_dune_kingdoms");
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_rakaph_dynasty");
+
+        cm:force_make_vassal("wh2_dlc09_tmb_followers_of_nagash", "wh2_main_vmp_necrarch_brotherhood");
+        cm:force_make_vassal("wh2_dlc09_tmb_followers_of_nagash", "wh2_main_vmp_strygos_empire");
+        cm:force_make_vassal("wh2_dlc09_tmb_followers_of_nagash", "wh2_main_vmp_the_silver_host");
+        cm:force_make_vassal("wh2_dlc09_tmb_followers_of_nagash", "wh2_main_vmp_vampire_coast");
     else
         -- call functions here that you want to fire every time you load the game.
     end;
