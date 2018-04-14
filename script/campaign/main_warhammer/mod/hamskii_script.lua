@@ -135,11 +135,7 @@ function hamskii_script()
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_numas");
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_dune_kingdoms");
         cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_rakaph_dynasty");
-
-        cm:force_make_vassal("wh2_dlc09_tmb_followers_of_nagash", "wh2_main_vmp_necrarch_brotherhood");
-        cm:force_make_vassal("wh2_dlc09_tmb_followers_of_nagash", "wh2_main_vmp_strygos_empire");
-        cm:force_make_vassal("wh2_dlc09_tmb_followers_of_nagash", "wh2_main_vmp_the_silver_host");
-        cm:force_make_vassal("wh2_dlc09_tmb_followers_of_nagash", "wh2_main_vmp_vampire_coast");
+        cm:force_make_vassal("wh2_dlc09_tmb_khemri", "wh2_dlc09_tmb_followers_of_nagash");
     else
         -- call functions here that you want to fire every time you load the game.
     end;
