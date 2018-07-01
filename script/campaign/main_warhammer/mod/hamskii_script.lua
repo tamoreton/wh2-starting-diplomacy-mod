@@ -4,9 +4,6 @@ local function vassalise(master_faction_key, vassal_faction_keys)
 
     local master_faction = cm:get_faction(master_faction_key);
 
-            -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
-            local vassal_enemies = {};
-
     for h = 1, #vassal_faction_keys do
         if not is_string(vassal_faction_keys[h]) then
 		    script_error("ERROR: hamskii_script() called but item [" .. h .. "] in supplied list of faction keys is not a string; its value is [" .. tostring(vassal_faction_keys[h]) .. "]");
@@ -15,6 +12,9 @@ local function vassalise(master_faction_key, vassal_faction_keys)
 
         local vassal_faction_key = vassal_faction_keys[h];
         local vassal_faction = cm:get_faction(vassal_faction_key);
+
+        -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
+        local vassal_enemies = {};
 
         table.insert(vassal_enemies, cm:get_faction(vassal_faction_key):factions_at_war_with());
 
@@ -25,6 +25,7 @@ local function vassalise(master_faction_key, vassal_faction_keys)
         if cm:is_multiplayer() then
             player_2 = cm:get_faction(human_factions[2]);
         end;
+
         -- declare war on all enemies of master's vassals unless they are allied with a player faction
         for i = 1, #vassal_enemies do
             if vassal_enemies[i] and not vassal_enemies[i]:is_empty() then
@@ -41,6 +42,7 @@ local function vassalise(master_faction_key, vassal_faction_keys)
                             if vassal_faction_keys[k] ~= vassal_faction_key then
                                 local other_vassal_faction_key = vassal_faction_keys[k];
                                 local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
+
                                 if not other_vassal_faction:at_war_with(vassal_enemy) then
                                     out("Forcing war between [" .. other_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
                                     cm:force_declare_war(other_vassal_faction_key, vassal_enemy_name, false, false);
