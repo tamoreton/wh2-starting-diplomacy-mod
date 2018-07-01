@@ -106,8 +106,7 @@ function hamskii_script()
             "wh_main_emp_hochland",
             "wh_main_emp_ostermark",
             "wh_main_emp_stirland",
-            "wh_main_emp_wissenland",
-            "wh2_main_emp_new_world_colonies"
+            "wh_main_emp_wissenland"
         });
         cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_grunburg");
         cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_eilhart");
