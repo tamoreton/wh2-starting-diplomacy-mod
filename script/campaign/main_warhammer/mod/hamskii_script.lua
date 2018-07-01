@@ -2,7 +2,10 @@
 local function vassalise(master_faction_key, vassal_faction_keys)
     out("vassalise() called, master_faction_key: " .. master_faction_key .. ", vassal faction_keys: " .. tostring(vassal_faction_keys));
 
-    local master_faction = cm:model():world():faction_by_key(master_faction_key);
+    local master_faction = cm:get_faction(master_faction_key);
+
+            -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
+            local vassal_enemies = {};
 
     for h = 1, #vassal_faction_keys do
         if not is_string(vassal_faction_keys[h]) then
@@ -11,10 +14,7 @@ local function vassalise(master_faction_key, vassal_faction_keys)
 	    end;
 
         local vassal_faction_key = vassal_faction_keys[h];
-        --local vassal_faction = cm:model():world():faction_by_key(vassal_faction_key);
-
-        -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
-        local vassal_enemies = {};
+        local vassal_faction = cm:get_faction(vassal_faction_key);
 
         table.insert(vassal_enemies, cm:get_faction(vassal_faction_key):factions_at_war_with());
 
@@ -26,18 +26,26 @@ local function vassalise(master_faction_key, vassal_faction_keys)
             player_2 = cm:get_faction(human_factions[2]);
         end;
         -- declare war on all enemies of master's vassals unless they are allied with a player faction
-        print(type(vassal_enemies));
         for i = 1, #vassal_enemies do
             if vassal_enemies[i] and not vassal_enemies[i]:is_empty() then
                 for j = 0, vassal_enemies[i]:num_items() - 1 do
                     local vassal_enemy = vassal_enemies[i]:item_at(j);
                     local vassal_enemy_name = vassal_enemy:name();
+
+                    out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                    cm:force_declare_war(master_faction_key, vassal_enemy_name, false, false);
+
                     if not vassal_enemy:is_ally_vassal_or_client_state_of(player_1) and not (player_2 and vassal_enemy:is_ally_vassal_or_client_state_of(player_2)) then
                         -- go through all vassalised factions as one vassal might not have the same enemies as another - all factions should be at war with the same set after this
                         for k = 1, #vassal_faction_keys do
-                            local current_vassal_faction_key = vassal_faction_keys[k];
-                            out("Forcing war between [" .. current_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
-                            cm:force_declare_war(current_vassal_faction_key, vassal_enemy_name, false, false);
+                            if vassal_faction_keys[k] ~= vassal_faction_key then
+                                local other_vassal_faction_key = vassal_faction_keys[k];
+                                local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
+                                if not other_vassal_faction:at_war_with(vassal_enemy) then
+                                    out("Forcing war between [" .. other_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                                    cm:force_declare_war(other_vassal_faction_key, vassal_enemy_name, false, false);
+                                end;
+                            end;
                         end;
                     end;
                 end;
@@ -91,7 +99,8 @@ function hamskii_script()
             "wh_main_emp_hochland",
             "wh_main_emp_ostermark",
             "wh_main_emp_stirland",
-            "wh_main_emp_wissenland"
+            "wh_main_emp_wissenland",
+            "wh2_main_emp_new_world_colonies"
         });
 
         cm:make_diplomacy_available("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
@@ -109,7 +118,7 @@ function hamskii_script()
             "wh_main_dwf_zhufbar",
             "wh2_main_dwf_greybeards_prospectors"
         });
-
+        --[[
         cm:force_confederation("wh_main_vmp_schwartzhafen", "wh2_main_vmp_the_silver_host");
         cm:transfer_region_to_faction("wh_main_western_sylvania_schwartzhafen", "wh_main_vmp_vampire_counts");
         cm:force_confederation("wh_main_vmp_vampire_counts", "wh_main_vmp_rival_sylvanian_vamps");
@@ -212,6 +221,7 @@ function hamskii_script()
             "wh2_dlc09_tmb_rakaph_dynasty",
             --"wh2_dlc09_tmb_followers_of_nagash"
         });
+        --]]
     end;
     out("hamskii_script() complete");
 end;
