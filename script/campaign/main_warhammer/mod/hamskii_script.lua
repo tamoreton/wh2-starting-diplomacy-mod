@@ -144,13 +144,13 @@ function hamskii_script()
         cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_blightwater_karak_azgal");
         cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_southern_badlands_galbaraz");
 
+        cm:force_declare_war("wh_main_vmp_schwartzhafen", "wh_main_vmp_vampire_counts", false, false);
+        cm:make_diplomacy_available("wh_main_vmp_schwartzhafen", "wh_main_vmp_mousillon");
+        cm:transfer_region_to_faction("wh_main_eastern_sylvania_eschen", "wh_main_vmp_vampire_counts");
+        cm:transfer_region_to_faction("wh_main_eastern_sylvania_waldenhof", "wh_main_vmp_vampire_counts");
+        cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
+        cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
         --[[
-        cm:force_confederation("wh_main_vmp_schwartzhafen", "wh2_main_vmp_the_silver_host");
-        cm:transfer_region_to_faction("wh_main_western_sylvania_schwartzhafen", "wh_main_vmp_vampire_counts");
-        cm:force_confederation("wh_main_vmp_vampire_counts", "wh_main_vmp_rival_sylvanian_vamps");
-        --cm:teleport_to(char_lookup_str(target_char), new_pos_x, new_pos_y, true);
-        cm:force_declare_war("wh_main_vmp_schwartzhafen", "wh_main_vmp_vampire_counts", true, true);
-
         vassalise("wh_dlc05_wef_wood_elves", {
             "wh_dlc05_wef_argwylon",
             "wh_dlc05_wef_torgovann",
