@@ -12,10 +12,10 @@ local function vassalise(master_faction_key, vassal_faction_keys)
 		    return false;
         end;
 
-        table.insert(regions_to_make_visible, vassal_faction:region_list());
-
         local vassal_faction_key = vassal_faction_keys[h];
         local vassal_faction = cm:get_faction(vassal_faction_key);
+
+        table.insert(regions_to_make_visible, vassal_faction:region_list());
 
         -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
         local vassal_enemies = {};
