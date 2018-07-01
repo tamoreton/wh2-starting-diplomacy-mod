@@ -1,56 +1,57 @@
 -- Simulate vassalisation through diplomacy menu
-local function vassalise(master_faction_key, vassal_faction_keys, aggressive)
-    local aggressive = aggressive or false; -- Set default value of aggressive to false
-    out("vassalise() called, master_faction_key: " .. master_faction_key .. ", vassal faction_keys: " .. tostring(vassal_faction_keys) .. ", aggressive: ", tostring(aggressive));
+local function vassalise(master_faction_key, vassal_faction_keys)
+    out("vassalise() called, master_faction_key: " .. master_faction_key .. ", vassal faction_keys: " .. tostring(vassal_faction_keys));
 
     local master_faction = cm:model():world():faction_by_key(master_faction_key);
-    out("DEBUG LINE 7");
 
-    for _, vassal_faction_key in ipairs(vassal_faction_keys) do
-        out("DEBUG LINE 10");
-        local vassal_faction = cm:model():world():faction_by_key(vassal_faction_key);
-        out("DEBUG LINE 12");
-        local factions_vassal_at_war_with = vassal_faction:factions_at_war_with();
-        out("DEBUG LINE 14");
-        
-        -- Loop through factions that the newly vassalised faction is at war with
-        for _, faction_vassal_is_at_war_with in ipairs(factions_vassal_at_war_with) do
-            out("DEBUG LINE 18");
-            local faction_vassal_is_at_war_with_key = faction_vassal_is_at_war_with:name();
-            out("DEBUG LINE 20");
+    for h = 1, #vassal_faction_keys do
+        if not is_string(vassal_faction_keys[h]) then
+		    script_error("ERROR: hamskii_script() called but item [" .. h .. "] in supplied list of faction keys is not a string; its value is [" .. tostring(vassal_faction_keys[h]) .. "]");
+		    return false;
+	    end;
 
-            if aggressive then
-                out("DEBUG LINE 23");
-                -- Declare war on any factions that the newly vassalised faction was at war with
-                out("force_declare_war() called, master_faction_key: " .. master_faction_key .. ", faction_vassal_is_at_war_with_key: " .. faction_vassal_is_at_war_with_key);
-                out("DEBUG LINE 26");
-                cm:force_declare_war(master_faction_key, faction_vassal_is_at_war_with_key, true, true);
-                out("DEBUG LINE 28");
-            else
-                out("DEBUG LINE 30");
-                -- OR: Force peace between the newly vassalised faction and any faction that it was at war with
-                out("force_make_peace() called, master_faction_key: " .. master_faction_key .. ", faction_vassal_is_at_war_with_key: " .. faction_vassal_is_at_war_with_key);
-                out("DEBUG LINE 31");
-                cm:force_make_peace(master_faction_key, faction_vassal_is_at_war_with_key);
-                out("DEBUG LINE 35");
-            end;
-            out("DEBUG LINE 37");
+        local vassal_faction_key = vassal_faction_keys[h];
+        --local vassal_faction = cm:model():world():faction_by_key(vassal_faction_key);
+
+        -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
+        local vassal_enemies = {};
+
+        table.insert(vassal_enemies, cm:get_faction(vassal_faction_key):factions_at_war_with());
+
+        local human_factions = cm:get_human_factions();
+        local player_1 = cm:get_faction(human_factions[1]);
+        local player_2 = nil;
+        -- only get player 2 if one exists
+        if cm:is_multiplayer() then
+            player_2 = cm:get_faction(human_factions[2]);
         end;
-        out("DEBUG LINE 39");
+        -- declare war on all enemies of master's vassals unless they are allied with a player faction
+        print(type(vassal_enemies));
+        for i = 1, #vassal_enemies do
+            if vassal_enemies[i] and not vassal_enemies[i]:is_empty() then
+                for j = 0, vassal_enemies[i]:num_items() - 1 do
+                    local vassal_enemy = vassal_enemies[i]:item_at(j);
+                    local vassal_enemy_name = vassal_enemy:name();
+                    if not vassal_enemy:is_ally_vassal_or_client_state_of(player_1) and not (player_2 and vassal_enemy:is_ally_vassal_or_client_state_of(player_2)) then
+                        -- go through all vassalised factions as one vassal might not have the same enemies as another - all factions should be at war with the same set after this
+                        for k = 1, #vassal_faction_keys do
+                            local current_vassal_faction_key = vassal_faction_keys[k];
+                            out("Forcing war between [" .. current_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                            cm:force_declare_war(current_vassal_faction_key, vassal_enemy_name, false, false);
+                        end;
+                    end;
+                end;
+            end;
+        end;
 
         -- Force the specified factions to have a trade agreement. If no agreement is possible, nothing will happen.
         out("force_make_trade_agreement() called, master_faction_key: " .. master_faction_key .. ", vassal_faction_key: " .. vassal_faction_key);
-        out("DEBUG LINE 43");
         cm:force_make_trade_agreement(master_faction_key, vassal_faction_key);
-        out("DEBUG LINE 45");
 
         -- Force a faction to become the master of another faction
         out("force_make_vassal() called, master_faction_key: " .. master_faction_key .. ", vassal_faction_key: " .. vassal_faction_key);
-        out("DEBUG LINE 49");
         cm:force_make_vassal(master_faction_key, vassal_faction_key);
-        out("DEBUG LINE 51");
     end;
-    out("DEBUG LINE 53");
 end;
 
 local function create_alliance_network(faction_keys)
@@ -58,6 +59,7 @@ local function create_alliance_network(faction_keys)
     for _, faction_key_1 in ipairs(faction_keys) do
         for _, faction_key_2 in ipairs(faction_keys) do
             if faction_key_1 ~= faction_key_2 then
+                out("Forcing alliance and trade agreement between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
                 cm:force_alliance(faction_key_1, faction_key_2);
                 cm:force_make_trade_agreement(faction_key_1, faction_key_2);
             end;
@@ -70,6 +72,7 @@ local function create_diplomatic_contact_network(faction_keys)
     for _, faction_key_1 in ipairs(faction_keys) do
         for _, faction_key_2 in ipairs(faction_keys) do
             if faction_key_1 ~= faction_key_2 then
+                out("Making diplomacy available between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
                 cm:make_diplomacy_available(faction_key_1, faction_key_2);
             end;
         end;
@@ -89,7 +92,7 @@ function hamskii_script()
             "wh_main_emp_ostermark",
             "wh_main_emp_stirland",
             "wh_main_emp_wissenland"
-        }, true);
+        });
 
         cm:make_diplomacy_available("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
         cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_khazid_bordkarag");
@@ -105,7 +108,7 @@ function hamskii_script()
             "wh_main_dwf_karak_ziflin",
             "wh_main_dwf_zhufbar",
             "wh2_main_dwf_greybeards_prospectors"
-        }, true);
+        });
 
         cm:force_confederation("wh_main_vmp_schwartzhafen", "wh2_main_vmp_the_silver_host");
         cm:transfer_region_to_faction("wh_main_western_sylvania_schwartzhafen", "wh_main_vmp_vampire_counts");
@@ -117,7 +120,7 @@ function hamskii_script()
             "wh_dlc05_wef_argwylon",
             "wh_dlc05_wef_torgovann",
             "wh_dlc05_wef_wydrioth"
-        }, true);
+        });
 
         vassalise("wh_main_brt_bretonnia", {
             "wh_main_brt_bordeleaux",
@@ -130,17 +133,17 @@ function hamskii_script()
             "wh2_main_brt_knights_of_origo",
             "wh2_main_brt_knights_of_the_flame",
             "wh2_main_brt_thegans_crusaders"
-        }, true);
-        
+        });
+
         vassalise("wh_dlc08_nor_norsca", {
             "wh_dlc08_nor_helspire_tribe",
             "wh_dlc08_nor_vanaheimlings"
-        }, true);
+        });
         cm:force_confederation("wh_dlc08_nor_norsca","wh_main_nor_skaeling");
         vassalise("wh_dlc08_nor_wintertooth", {
             "wh_dlc08_nor_goromadny_tribe",
             "wh_dlc08_nor_naglfarlings"
-        }, true);
+        });
         cm:force_confederation("wh_dlc08_nor_wintertooth","wh_main_nor_varg");
 
         create_alliance_network({
@@ -157,7 +160,7 @@ function hamskii_script()
             "wh2_main_hef_cothique",
             "wh2_main_hef_yvresse"
         });
-        vassalise("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" }, true);
+        vassalise("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
 
         vassalise("wh2_main_def_naggarond", {
             "wh2_main_def_cult_of_pleasure",
@@ -171,7 +174,7 @@ function hamskii_script()
             "wh2_main_def_scourge_of_khaine",
             "wh2_main_def_ssildra_tor",
             "wh2_main_def_the_forgebound"
-        }, true);
+        });
 
         create_alliance_network({
             "wh2_main_lzd_hexoatl",
@@ -181,7 +184,7 @@ function hamskii_script()
             "wh2_main_lzd_tlaxtlan",
             "wh2_main_lzd_xlanhuapec"
         });
-        vassalise("wh2_main_lzd_hexoatl", { "wh2_main_lzd_last_defenders" }, true);
+        vassalise("wh2_main_lzd_hexoatl", { "wh2_main_lzd_last_defenders" });
 
         create_diplomatic_contact_network({
             "wh2_main_skv_clan_mors",
@@ -207,7 +210,8 @@ function hamskii_script()
             "wh2_dlc09_tmb_numas",
             "wh2_dlc09_tmb_dune_kingdoms",
             "wh2_dlc09_tmb_rakaph_dynasty",
-            "wh2_dlc09_tmb_followers_of_nagash"
-        }, true);
+            --"wh2_dlc09_tmb_followers_of_nagash"
+        });
     end;
+    out("hamskii_script() complete");
 end;
