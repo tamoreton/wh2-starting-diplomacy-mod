@@ -52,10 +52,6 @@ local function vassalise(master_faction_key, vassal_faction_keys)
             end;
         end;
 
-        -- Force the specified factions to have a trade agreement. If no agreement is possible, nothing will happen.
-        out("force_make_trade_agreement() called, master_faction_key: " .. master_faction_key .. ", vassal_faction_key: " .. vassal_faction_key);
-        cm:force_make_trade_agreement(master_faction_key, vassal_faction_key);
-
         -- Force a faction to become the master of another faction
         out("force_make_vassal() called, master_faction_key: " .. master_faction_key .. ", vassal_faction_key: " .. vassal_faction_key);
         cm:force_make_vassal(master_faction_key, vassal_faction_key);
@@ -67,9 +63,8 @@ local function create_alliance_network(faction_keys)
     for _, faction_key_1 in ipairs(faction_keys) do
         for _, faction_key_2 in ipairs(faction_keys) do
             if faction_key_1 ~= faction_key_2 then
-                out("Forcing alliance and trade agreement between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
+                out("Forcing alliance between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
                 cm:force_alliance(faction_key_1, faction_key_2);
-                cm:force_make_trade_agreement(faction_key_1, faction_key_2);
             end;
         end;
     end;
