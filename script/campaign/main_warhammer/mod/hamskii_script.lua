@@ -4,11 +4,15 @@ local function vassalise(master_faction_key, vassal_faction_keys)
 
     local master_faction = cm:get_faction(master_faction_key);
 
+    local regions_to_make_visible = {};
+
     for h = 1, #vassal_faction_keys do
         if not is_string(vassal_faction_keys[h]) then
 		    script_error("ERROR: hamskii_script() called but item [" .. h .. "] in supplied list of faction keys is not a string; its value is [" .. tostring(vassal_faction_keys[h]) .. "]");
 		    return false;
-	    end;
+        end;
+
+        table.insert(regions_to_make_visible, vassal_faction:region_list());
 
         local vassal_faction_key = vassal_faction_keys[h];
         local vassal_faction = cm:get_faction(vassal_faction_key);
@@ -16,7 +20,7 @@ local function vassalise(master_faction_key, vassal_faction_keys)
         -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
         local vassal_enemies = {};
 
-        table.insert(vassal_enemies, cm:get_faction(vassal_faction_key):factions_at_war_with());
+        table.insert(vassal_enemies, vassal_faction:factions_at_war_with());
 
         local human_factions = cm:get_human_factions();
         local player_1 = cm:get_faction(human_factions[1]);
@@ -57,6 +61,12 @@ local function vassalise(master_faction_key, vassal_faction_keys)
         -- Force a faction to become the master of another faction
         out("force_make_vassal() called, master_faction_key: " .. master_faction_key .. ", vassal_faction_key: " .. vassal_faction_key);
         cm:force_make_vassal(master_faction_key, vassal_faction_key);
+    end;
+
+    for i = 1, #vassal_faction_keys do
+        for j = 0, regions_to_make_visible:num_items() - 1 do
+            cm:make_region_seen_in_shroud(vassal_faction_keys[i], regions_to_make_visible:item_at(j):name());
+        end;
     end;
 end;
 
