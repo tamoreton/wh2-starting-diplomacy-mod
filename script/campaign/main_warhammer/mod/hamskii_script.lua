@@ -121,10 +121,6 @@ function hamskii_script()
         cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_fort_oberstyre");
         cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_schwartzhafen");
 
-        cm:make_diplomacy_available("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_khazid_bordkarag");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_kraka_drak");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_sjoktraken");
         vassalise("wh_main_dwf_dwarfs", {
             "wh_main_dwf_barak_varr",
             "wh_main_dwf_karak_azul",
@@ -136,6 +132,19 @@ function hamskii_script()
             "wh_main_dwf_zhufbar",
             "wh2_main_dwf_greybeards_prospectors"
         });
+
+        cm:make_diplomacy_available("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_khazid_bordkarag");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_kraka_drak");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_sjoktraken");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_northern_worlds_edge_mountains_karak_ungor");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_rib_peaks_mount_gunbad");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_death_pass_karak_drazh");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_western_badlands_ekrund");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_eastern_badlands_karak_eight_peaks");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_blightwater_karak_azgal");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_southern_badlands_galbaraz");
+
         --[[
         cm:force_confederation("wh_main_vmp_schwartzhafen", "wh2_main_vmp_the_silver_host");
         cm:transfer_region_to_faction("wh_main_western_sylvania_schwartzhafen", "wh_main_vmp_vampire_counts");
