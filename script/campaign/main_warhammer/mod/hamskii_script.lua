@@ -102,6 +102,17 @@ function hamskii_script()
             "wh_main_emp_wissenland",
             "wh2_main_emp_new_world_colonies"
         });
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_grunburg");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_eilhart");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_helmgart");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_marienburg");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_gorssel");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_castle_drakenhof");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_eschen");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_waldenhof");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_castle_templehof");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_fort_oberstyre");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_schwartzhafen");
 
         cm:make_diplomacy_available("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
         cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_khazid_bordkarag");
