@@ -6,6 +6,15 @@ local function vassalise(master_faction_key, vassal_faction_keys)
 
     local regions_to_make_visible = {};
 
+    local human_factions = cm:get_human_factions();
+    local player_1 = cm:get_faction(human_factions[1]);
+    local player_2 = nil;
+    -- only get player 2 if one exists
+    if cm:is_multiplayer() then
+        player_2 = cm:get_faction(human_factions[2]);
+    end;
+
+
     for h = 1, #vassal_faction_keys do
         if not is_string(vassal_faction_keys[h]) then
 		    script_error("ERROR: hamskii_script() called but item [" .. h .. "] in supplied list of faction keys is not a string; its value is [" .. tostring(vassal_faction_keys[h]) .. "]");
@@ -15,21 +24,13 @@ local function vassalise(master_faction_key, vassal_faction_keys)
         local vassal_faction_key = vassal_faction_keys[h];
         local vassal_faction = cm:get_faction(vassal_faction_key);
 
-        if not vassal_faction:is_human() then
+        if vassal_faction ~= player_1 or vassal_faction ~= player_2 then
             table.insert(regions_to_make_visible, vassal_faction:region_list());
 
             -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
             local vassal_enemies = {};
 
             table.insert(vassal_enemies, vassal_faction:factions_at_war_with());
-
-            local human_factions = cm:get_human_factions();
-            local player_1 = cm:get_faction(human_factions[1]);
-            local player_2 = nil;
-            -- only get player 2 if one exists
-            if cm:is_multiplayer() then
-                player_2 = cm:get_faction(human_factions[2]);
-            end;
 
             -- declare war on all enemies of master's vassals unless they are allied with a player faction
             for i = 1, #vassal_enemies do
@@ -58,21 +59,26 @@ local function vassalise(master_faction_key, vassal_faction_keys)
                     end;
                 end;
             end;
+        end;
+    end;
 
-        -- Force a faction to become the master of another faction
-        out("force_make_vassal() called, master_faction_key: " .. master_faction_key .. ", vassal_faction_key: " .. vassal_faction_key);
-        cm:force_make_vassal(master_faction_key, vassal_faction_key);
+    for i = 1, #vassal_faction_keys do
+        local vassal_faction_key = vassal_faction_keys[i];
+        local vassal_faction = cm:get_faction(vassal_faction_key);
+
+        if vassal_faction ~= player_1 or vassal_faction ~= player_2 then
+            -- Force a faction to become the master of another faction
+            out("force_make_vassal() called, master_faction_key: " .. master_faction_key .. ", vassal_faction_key: " .. vassal_faction_key);
+            cm:force_make_vassal(master_faction_key, vassal_faction_key);
         else
             out("force_alliance called, faction_key_1: " .. master_faction_key .. ", faction_key_2: " .. vassal_faction_key);
-            cm:force_alliance(faction_key_1, faction_key_2);
+            cm:force_alliance(master_faction_key, vassal_faction_key);
         end;
     end;
 
     --[[
-    for i = 1, #vassal_faction_keys do
-        for j = 0, regions_to_make_visible:num_items() - 1 do
-            cm:make_region_seen_in_shroud(vassal_faction_keys[i], regions_to_make_visible:item_at(j):name());
-        end;
+    for j = 0, regions_to_make_visible:num_items() - 1 do
+        cm:make_region_seen_in_shroud(vassal_faction_keys[i], regions_to_make_visible:item_at(j):name());
     end;
     --]]
 end;
@@ -157,7 +163,7 @@ function hamskii_script()
         cm:transfer_region_to_faction("wh_main_eastern_sylvania_waldenhof", "wh_main_vmp_vampire_counts");
         cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
         cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
-        --[[
+
         vassalise("wh_dlc05_wef_wood_elves", {
             "wh_dlc05_wef_argwylon",
             "wh_dlc05_wef_torgovann",
@@ -176,7 +182,7 @@ function hamskii_script()
             "wh2_main_brt_knights_of_the_flame",
             "wh2_main_brt_thegans_crusaders"
         });
-
+        --[[
         vassalise("wh_dlc08_nor_norsca", {
             "wh_dlc08_nor_helspire_tribe",
             "wh_dlc08_nor_vanaheimlings"
