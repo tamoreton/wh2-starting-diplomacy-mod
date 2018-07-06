@@ -1,13 +1,38 @@
 -- Simulate vassalisation through diplomacy menu
-local human_factions = cm:get_human_factions();
-local player_1 = cm:get_faction(human_factions[1]);
-local player_2 = nil;
--- only get player 2 if one exists
-if cm:is_multiplayer() then
-    player_2 = cm:get_faction(human_factions[2]);
+local function has_value (tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true;
+        end;
+    end;
+
+    return false;
+end;
+
+local function establish_diplomatic_contact_and_reveal_regions(playerable_faction_key, npc_faction_key)
+    out("Making diplomacy available between [" .. playerable_faction_key .. "] and [" .. npc_faction_key .. "]");
+    cm:make_diplomacy_available(playerable_faction_key, npc_faction_key);
+
+    local npc_faction = cm:get_faction(npc_faction_key);
+    local npc_faction_regions = npc_faction:region_list();
+
+    for i = 0, npc_faction_regions:num_items() - 1 do
+        cm:make_region_seen_in_shroud(playerable_faction_key, npc_faction_regions:item_at(i):name());
+    end;
 end;
 
 local function preserve_vassal_master_rules(master_faction_key, vassal_faction_keys)
+    out("preserve_vassal_master_rules() called, master_faction_key: " .. master_faction_key .. ", vassal faction_keys: " .. tostring(vassal_faction_keys));
+
+    local master_faction = cm:get_faction(master_faction_key);
+
+    local human_factions = cm:get_human_factions();
+    local player_1 = cm:get_faction(human_factions[1]);
+    local player_2 = nil;
+    -- only get player 2 if one exists
+    if cm:is_multiplayer() then
+        player_2 = cm:get_faction(human_factions[2]);
+    end;
 
     for h = 1, #vassal_faction_keys do
         if not is_string(vassal_faction_keys[h]) then
@@ -17,6 +42,13 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
 
         local vassal_faction_key = vassal_faction_keys[h];
         local vassal_faction = cm:get_faction(vassal_faction_key);
+
+        establish_diplomatic_contact_and_reveal_regions(master_faction_key, vassal_faction_key);
+
+        if master_faction:at_war_with(vassal_faction) then
+            out("Forcing peace between [" .. master_faction_key .. "] and [" .. vassal_faction_key .. "]");
+            cm:force_make_peace(master_faction_key, vassal_faction_key);
+        end;
 
         if vassal_faction ~= player_1 or vassal_faction ~= player_2 then
             -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
@@ -31,15 +63,25 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
                         local vassal_enemy = vassal_enemies[i]:item_at(j);
                         local vassal_enemy_name = vassal_enemy:name();
 
-                        out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
-                        cm:force_declare_war(master_faction_key, vassal_enemy_name, true, true);
+                        if has_value(vassal_faction_keys, vassal_enemy_name) then
+                            out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                            cm:force_make_peace(vassal_faction_key, vassal_enemy_name);
+                        end;
 
                         if not vassal_enemy:is_ally_vassal_or_client_state_of(player_1) and not (player_2 and vassal_enemy:is_ally_vassal_or_client_state_of(player_2)) then
-                            -- go through all vassalised factions as one vassal might not have the same enemies as another - all factions should be at war with the same set after this
+                            -- go through all vassalised factions as one vassal might not have the same enemies as another
+                            -- all factions should be at war with the same set after this
                             for k = 1, #vassal_faction_keys do
                                 if vassal_faction_keys[k] ~= vassal_faction_key then
                                     local other_vassal_faction_key = vassal_faction_keys[k];
                                     local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
+
+                                    establish_diplomatic_contact_and_reveal_regions(vassal_faction_key, other_vassal_faction_key);
+
+                                    if vassal_faction:at_war_with(other_vassal_faction) then
+                                        out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction .. "]");
+                                        cm:force_make_peace(vassal_faction_key, other_vassal_faction);
+                                    end;
 
                                     if not other_vassal_faction:at_war_with(vassal_enemy) then
                                         out("Forcing war between [" .. other_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
@@ -47,6 +89,9 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
                                     end;
                                 end;
                             end;
+
+                            out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                            cm:force_declare_war(master_faction_key, vassal_enemy_name, true, true);
                         end;
                     end;
                 end;
@@ -57,6 +102,14 @@ end;
 
 local function vassalise(master_faction_key, vassal_faction_keys)
     out("vassalise() called, master_faction_key: " .. master_faction_key .. ", vassal faction_keys: " .. tostring(vassal_faction_keys));
+
+    local human_factions = cm:get_human_factions();
+    local player_1 = cm:get_faction(human_factions[1]);
+    local player_2 = nil;
+    -- only get player 2 if one exists
+    if cm:is_multiplayer() then
+        player_2 = cm:get_faction(human_factions[2]);
+    end;
 
     local regions_to_make_visible = {};
 
@@ -99,9 +152,20 @@ end;
 
 local function create_diplomatic_contact_network(faction_keys)
     out("create_diplomatic_contact_network() called, faction_keys: " .. tostring(faction_keys));
+
     for _, faction_key_1 in ipairs(faction_keys) do
+        local faction_1 = cm:get_faction(faction_key_1);
+
+        local regions_to_make_visible = faction_1:region_list();
+
         for _, faction_key_2 in ipairs(faction_keys) do
             if faction_key_1 ~= faction_key_2 then
+                --[[
+                for i = 0, regions_to_make_visible:num_items() - 1 do
+                    cm:make_region_seen_in_shroud(faction_key_2, regions_to_make_visible:item_at(i):name());
+                end;
+                --]]
+
                 out("Making diplomacy available between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
                 cm:make_diplomacy_available(faction_key_1, faction_key_2);
             end;
@@ -154,19 +218,28 @@ function hamskii_script()
             "wh_main_brt_bastonne",
             "wh_main_brt_lyonesse",
             "wh_main_brt_parravon",
-            "wh_main_vmp_mousillon",
             "wh2_main_brt_knights_of_origo",
             "wh2_main_brt_knights_of_the_flame",
             "wh2_main_brt_thegans_crusaders"
         });
 
-        cm:force_declare_war("wh_dlc08_nor_norsca", "wh_dlc08_nor_norsca", false, false);
+        cm:transfer_region_to_faction("wh_main_trollheim_mountains_bay_of_blades", "wh_dlc08_nor_naglfarlings");
+        cm:transfer_region_to_faction("wh_main_trollheim_mountains_sarl_encampment", "wh_dlc08_nor_naglfarlings");
+        cm:transfer_region_to_faction("wh_main_trollheim_mountains_the_tower_of_khrakk", "wh_dlc08_nor_naglfarlings");
+        cm:transfer_region_to_faction("wh_main_mountains_of_hel_altar_of_spawns", "wh_dlc08_nor_wintertooth");
+        cm:transfer_region_to_faction("wh_main_mountains_of_hel_aeslings_conclave", "wh_dlc08_nor_wintertooth");
+        cm:force_declare_war("wh_dlc08_nor_norsca", "wh_dlc08_nor_wintertooth", false, false);
+        cm:force_declare_war("wh_dlc08_nor_wintertooth", "wh_main_ksl_kislev", false, false);
+        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_aghol", false, false);
+        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_mung", false, false);
+        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_skeggi", false, false);
         preserve_vassal_master_rules("wh_dlc08_nor_norsca", {
             "wh_dlc08_nor_helspire_tribe",
             "wh_dlc08_nor_vanaheimlings"
         });
         preserve_vassal_master_rules("wh_dlc08_nor_wintertooth", {
             "wh_dlc08_nor_goromadny_tribe",
+            "wh_main_nor_varg",
             "wh_dlc08_nor_naglfarlings"
         });
 
@@ -182,20 +255,18 @@ function hamskii_script()
             "wh2_main_def_har_ganeth",
             "wh2_main_def_karond_kar",
             "wh2_main_def_scourge_of_khaine",
-            "wh2_main_def_ssildra_tor",
             "wh2_main_def_the_forgebound"
         });
 
         preserve_vassal_master_rules("wh2_main_lzd_hexoatl", { "wh2_main_lzd_last_defenders" });
 
-        vassalise("wh2_dlc09_tmb_khemri",
+        preserve_vassal_master_rules("wh2_dlc09_tmb_khemri",
         {
             "wh2_dlc09_tmb_lybaras",
             "wh2_dlc09_tmb_exiles_of_nehek",
             "wh2_dlc09_tmb_numas",
             "wh2_dlc09_tmb_dune_kingdoms",
             "wh2_dlc09_tmb_rakaph_dynasty",
-            "wh2_dlc09_tmb_followers_of_nagash"
         });
 
         vassalise("wh_main_emp_empire", {
@@ -209,6 +280,7 @@ function hamskii_script()
             "wh_main_emp_stirland",
             "wh_main_emp_wissenland"
         });
+
         cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_grunburg");
         cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_eilhart");
         cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_helmgart");
@@ -233,10 +305,7 @@ function hamskii_script()
             "wh2_main_dwf_greybeards_prospectors"
         });
 
-        cm:make_diplomacy_available("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_khazid_bordkarag");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_kraka_drak");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_gianthome_mountains_sjoktraken");
+        establish_diplomatic_contact_and_reveal_regions("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
         cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_northern_worlds_edge_mountains_karak_ungor");
         cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_rib_peaks_mount_gunbad");
         cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_death_pass_karak_drazh");
@@ -250,6 +319,8 @@ function hamskii_script()
         cm:transfer_region_to_faction("wh_main_eastern_sylvania_waldenhof", "wh_main_vmp_vampire_counts");
         cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
         cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
+
+        cm:force_confederation("wh_main_grn_crooked_moon","wh_main_grn_necksnappers");
 
         vassalise("wh_dlc05_wef_wood_elves", {
             "wh_dlc05_wef_argwylon",
@@ -275,12 +346,13 @@ function hamskii_script()
             "wh_dlc08_nor_vanaheimlings"
         });
         cm:force_confederation("wh_dlc08_nor_norsca","wh_main_nor_skaeling");
+        cm:force_make_peace("wh_dlc08_nor_wintertooth", "wh_dlc08_nor_goromadny_tribe");
         vassalise("wh_dlc08_nor_wintertooth", {
             "wh_dlc08_nor_goromadny_tribe",
             "wh_dlc08_nor_naglfarlings"
         });
-        cm:force_confederation("wh_dlc08_nor_wintertooth","wh_main_nor_varg");
-        
+
+        --[[
         create_alliance_network({
             "wh2_main_hef_eataine",
             "wh2_main_hef_caledor",
@@ -295,8 +367,12 @@ function hamskii_script()
             "wh2_main_hef_cothique",
             "wh2_main_hef_yvresse"
         });
+        --]]
         vassalise("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
 
+        cm:force_confederation("wh2_main_def_cult_of_pleasure", "wh2_main_def_ssildra_tor");
+        cm:transfer_region_to_faction("wh2_main_the_road_of_skulls_spite_reach", "wh2_main_def_har_ganeth");
+        cm:transfer_region_to_faction("wh2_main_the_road_of_skulls_the_black_pillar", "wh2_main_def_har_ganeth");
         vassalise("wh2_main_def_naggarond", {
             "wh2_main_def_cult_of_pleasure",
             "wh2_main_def_bleak_holds",
@@ -307,10 +383,9 @@ function hamskii_script()
             "wh2_main_def_har_ganeth",
             "wh2_main_def_karond_kar",
             "wh2_main_def_scourge_of_khaine",
-            "wh2_main_def_ssildra_tor",
             "wh2_main_def_the_forgebound"
         });
-
+        --[[
         create_alliance_network({
             "wh2_main_lzd_hexoatl",
             "wh2_main_lzd_itza",
@@ -319,8 +394,9 @@ function hamskii_script()
             "wh2_main_lzd_tlaxtlan",
             "wh2_main_lzd_xlanhuapec"
         });
+        --]]
         vassalise("wh2_main_lzd_hexoatl", { "wh2_main_lzd_last_defenders" });
-
+        --[[
         create_diplomatic_contact_network({
             "wh2_main_skv_clan_mors",
             "wh2_dlc09_skv_clan_rictus",
@@ -337,7 +413,7 @@ function hamskii_script()
             "wh2_main_skv_clan_moulder",
             "wh2_main_skv_clan_pestilens"
         });
-
+        --]]
         vassalise("wh2_dlc09_tmb_khemri",
         {
             "wh2_dlc09_tmb_lybaras",
@@ -345,8 +421,16 @@ function hamskii_script()
             "wh2_dlc09_tmb_numas",
             "wh2_dlc09_tmb_dune_kingdoms",
             "wh2_dlc09_tmb_rakaph_dynasty",
-            "wh2_dlc09_tmb_followers_of_nagash"
         });
+        --[[
+        create_diplomatic_contact_network({
+            "wh2_dlc09_tmb_followers_of_nagash",
+            "wh2_main_vmp_necrarch_brotherhood",
+            "wh2_main_vmp_strygos_empire",
+            "wh2_main_vmp_the_silver_host",
+            "wh_main_vmp_schwartzhafen"
+        });
+        --]]
     end;
     out("hamskii_script() complete");
 end;
