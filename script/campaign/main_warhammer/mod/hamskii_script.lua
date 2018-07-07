@@ -43,7 +43,8 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
         local vassal_faction_key = vassal_faction_keys[h];
         local vassal_faction = cm:get_faction(vassal_faction_key);
 
-        establish_diplomatic_contact_and_reveal_regions(master_faction_key, vassal_faction_key);
+        out("Making diplomacy available between [" .. master_faction_key .. "] and [" .. vassal_faction_key .. "]");
+        cm:make_diplomacy_available(master_faction_key, vassal_faction_key);
 
         if master_faction:at_war_with(vassal_faction) then
             out("Forcing peace between [" .. master_faction_key .. "] and [" .. vassal_faction_key .. "]");
@@ -76,22 +77,30 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
                                     local other_vassal_faction_key = vassal_faction_keys[k];
                                     local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
 
-                                    establish_diplomatic_contact_and_reveal_regions(vassal_faction_key, other_vassal_faction_key);
+                                    out("Making diplomacy available between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction_key .. "]");
+                                    cm:make_diplomacy_available(vassal_faction_key, other_vassal_faction_key);
+                                     -- Crashes revealing wh2_main_def_har_ganeth's regions to wh2_main_def_ghrond for some reason
+                                    -- establish_diplomatic_contact_and_reveal_regions(vassal_faction_key, other_vassal_faction_key);
 
                                     if vassal_faction:at_war_with(other_vassal_faction) then
+
                                         out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction .. "]");
                                         cm:force_make_peace(vassal_faction_key, other_vassal_faction);
                                     end;
 
+                                    --[[
                                     if not other_vassal_faction:at_war_with(vassal_enemy) then
                                         out("Forcing war between [" .. other_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
                                         cm:force_declare_war(other_vassal_faction_key, vassal_enemy_name, true, true);
                                     end;
+                                    --]]
                                 end;
                             end;
 
-                            out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
-                            cm:force_declare_war(master_faction_key, vassal_enemy_name, true, true);
+                            if not has_value(vassal_faction_keys, vassal_enemy_name) and master_faction_key ~= vassal_enemy_name then
+                                out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                                cm:force_declare_war(master_faction_key, vassal_enemy_name, true, true);
+                            end;
                         end;
                     end;
                 end;
@@ -245,13 +254,13 @@ function hamskii_script()
 
         preserve_vassal_master_rules("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
 
+        cm:force_confederation("wh2_main_def_har_ganeth", "wh2_main_def_ghrond");
         preserve_vassal_master_rules("wh2_main_def_naggarond", {
             "wh2_main_def_cult_of_pleasure",
             "wh2_main_def_bleak_holds",
             "wh2_main_def_clar_karond",
             "wh2_main_def_cult_of_excess",
             "wh2_main_def_deadwood_sentinels",
-            "wh2_main_def_ghrond",
             "wh2_main_def_har_ganeth",
             "wh2_main_def_karond_kar",
             "wh2_main_def_scourge_of_khaine",
@@ -320,6 +329,8 @@ function hamskii_script()
         cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
         cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
 
+        cm:transfer_region_to_faction("wh_main_death_pass_karak_drazh", "wh_main_grn_red_fangs");
+        cm:force_confederation("wh_main_grn_greenskins", "wh_main_grn_red_eye");
         cm:force_confederation("wh_main_grn_crooked_moon","wh_main_grn_necksnappers");
 
         vassalise("wh_dlc05_wef_wood_elves", {
@@ -371,8 +382,6 @@ function hamskii_script()
         vassalise("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
 
         cm:force_confederation("wh2_main_def_cult_of_pleasure", "wh2_main_def_ssildra_tor");
-        cm:transfer_region_to_faction("wh2_main_the_road_of_skulls_spite_reach", "wh2_main_def_har_ganeth");
-        cm:transfer_region_to_faction("wh2_main_the_road_of_skulls_the_black_pillar", "wh2_main_def_har_ganeth");
         vassalise("wh2_main_def_naggarond", {
             "wh2_main_def_cult_of_pleasure",
             "wh2_main_def_bleak_holds",
@@ -390,7 +399,6 @@ function hamskii_script()
             "wh2_main_lzd_hexoatl",
             "wh2_main_lzd_itza",
             "wh2_main_lzd_sentinels_of_xeti",
-            "wh2_main_lzd_teotiqua",
             "wh2_main_lzd_tlaxtlan",
             "wh2_main_lzd_xlanhuapec"
         });
