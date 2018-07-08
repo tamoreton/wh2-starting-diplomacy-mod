@@ -64,6 +64,11 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
                         local vassal_enemy = vassal_enemies[i]:item_at(j);
                         local vassal_enemy_name = vassal_enemy:name();
 
+                        -- Need to figure out why Bretonnia goes to war with Karak Ziflin but not other Dwarf factions
+                        -- Also, Karak Norn with Wood Elves
+                        out("vassal_faction_key: " .. vassal_faction_key);
+                        out("vassal_enemy_name: " .. vassal_enemy_name);
+
                         if has_value(vassal_faction_keys, vassal_enemy_name) then
                             out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
                             cm:force_make_peace(vassal_faction_key, vassal_enemy_name);
@@ -88,12 +93,12 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
                                         cm:force_make_peace(vassal_faction_key, other_vassal_faction);
                                     end;
 
-                                    --[[
+
                                     if not other_vassal_faction:at_war_with(vassal_enemy) then
                                         out("Forcing war between [" .. other_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
                                         cm:force_declare_war(other_vassal_faction_key, vassal_enemy_name, true, true);
                                     end;
-                                    --]]
+
                                 end;
                             end;
 
@@ -130,7 +135,7 @@ local function vassalise(master_faction_key, vassal_faction_keys)
 
         if vassal_faction == player_1 or vassal_faction == player_2 then
             out("force_alliance called, faction_key_1: " .. master_faction_key .. ", faction_key_2: " .. vassal_faction_key);
-            cm:force_alliance(master_faction_key, vassal_faction_key);
+            cm:force_alliance(master_faction_key, vassal_faction_key, true);
         else
             -- Force a faction to become the master of another faction
             out("force_make_vassal() called, master_faction_key: " .. master_faction_key .. ", vassal_faction_key: " .. vassal_faction_key);
@@ -153,7 +158,7 @@ local function create_alliance_network(faction_keys)
         for _, faction_key_2 in ipairs(faction_keys) do
             if faction_key_1 ~= faction_key_2 then
                 out("Forcing alliance between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
-                cm:force_alliance(faction_key_1, faction_key_2);
+                cm:force_alliance(faction_key_1, faction_key_2, true);
             end;
         end;
     end;
@@ -188,7 +193,7 @@ function hamskii_script()
         -- Start by putting all the factions that need to be at war with each other, at war with each other
         -- Do this before any calls to force_make_vassal to avoid running into a mess with factions asking allies to join
 
-        cm:force_alliance("wh_main_emp_empire", "wh_main_dwf_dwarfs");
+        cm:force_alliance("wh_main_emp_empire", "wh_main_dwf_dwarfs", true);
         preserve_vassal_master_rules("wh_main_emp_empire", {
             "wh_main_emp_middenland",
             "wh_main_emp_averland",
@@ -214,6 +219,40 @@ function hamskii_script()
         });
 
         cm:force_declare_war("wh_main_vmp_schwartzhafen", "wh_main_vmp_vampire_counts", false, false);
+
+        cm:force_declare_war("wh_main_grn_greenskins", "wh_main_ksl_kislev", false, false);
+        cm:force_declare_war("wh_main_grn_greenskins", "wh_main_vmp_vampire_counts", false, false);
+        cm:force_declare_war("wh_main_grn_greenskins", "wh_main_vmp_schwartzhafen", false, false);
+        establish_diplomatic_contact_and_reveal_regions("wh_main_grn_orcs_of_the_bloody_hand", "wh2_main_lzd_teotiqua");
+        establish_diplomatic_contact_and_reveal_regions("wh_main_grn_orcs_of_the_bloody_hand", "wh2_dlc09_tmb_khemri");
+        cm:force_declare_war("wh_main_grn_orcs_of_the_bloody_hand", "wh2_main_lzd_teotiqua", false, false);
+
+        local greenskin_faction_keys = {
+            "wh_main_grn_black_venom",
+            "wh_main_grn_bloody_spearz",
+            "wh_main_grn_broken_nose",
+            "wh_main_grn_crooked_moon",
+            "wh_main_grn_greenskins",
+            "wh_main_grn_orcs_of_the_bloody_hand",
+            "wh_main_grn_red_fangs",
+            "wh_main_grn_scabby_eye",
+            "wh_main_grn_skullsmasherz",
+            "wh_main_grn_teef_snatchaz",
+            "wh_main_grn_top_knotz"
+        };
+        for _, greenskin_faction_key_1 in ipairs(greenskin_faction_keys) do
+            for _, greenskin_faction_key_2 in ipairs(greenskin_faction_keys) do
+                if greenskin_faction_key_1 ~= greenskin_faction_key_2 then
+                    local test_1 = (greenskin_faction_key_1 == "wh_main_grn_greenskins") and (greenskin_faction_key_2 == "wh_main_grn_orcs_of_the_bloody_hand");
+                    local test_2 = (greenskin_faction_key_1 == "wh_main_grn_greenskins") and (greenskin_faction_key_2 == "wh_main_grn_crooked_moon");
+                    local test_3 = (greenskin_faction_key_1 == "wh_main_grn_orcs_of_the_bloody_hand") and (greenskin_faction_key_2 == "wh_main_grn_crooked_moon");
+                    if not test_1 or not test_2 or not test_3 then
+                        cm:force_declare_war(greenskin_faction_key_1, greenskin_faction_key_2, false, false);
+                    end;
+                end;
+            end;
+        end;
+        cm:force_alliance("wh_main_grn_greenskins", "wh_main_grn_orcs_of_the_bloody_hand", true);
 
         preserve_vassal_master_rules("wh_dlc05_wef_wood_elves", {
             "wh_dlc05_wef_argwylon",
@@ -270,6 +309,15 @@ function hamskii_script()
         });
 
         preserve_vassal_master_rules("wh2_main_lzd_hexoatl", { "wh2_main_lzd_last_defenders" });
+
+        establish_diplomatic_contact_and_reveal_regions("wh2_main_skv_clan_mors", "wh_main_grn_necksnappers");
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_necksnappers", false, false);
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_crooked_moon", false, false);
+        -- cm:force_diplomacy("faction:wh2_main_skv_clan_mors", "faction:wh_main_grn_crooked_moon", "peace", false, false, true);
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_dwf_karak_izor", false, false);
+        -- cm:force_diplomacy("faction:wh2_main_skv_clan_mors", "faction:wh_main_dwf_karak_izor", "peace", false, false, true);
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_red_fangs", false, false);
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_dwf_karak_azul", false, false);
 
         preserve_vassal_master_rules("wh2_dlc09_tmb_khemri",
         {
@@ -332,8 +380,10 @@ function hamskii_script()
         cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
 
         cm:transfer_region_to_faction("wh_main_death_pass_karak_drazh", "wh_main_grn_red_fangs");
+        cm:transfer_region_to_faction("wh_main_western_badlands_ekrund", "wh_main_grn_teef_snatchaz");
         cm:force_confederation("wh_main_grn_greenskins", "wh_main_grn_red_eye");
         cm:force_confederation("wh_main_grn_crooked_moon","wh_main_grn_necksnappers");
+        cm:force_confederation("wh_main_grn_orcs_of_the_bloody_hand", "wh2_main_grn_arachnos");
 
         vassalise("wh_dlc05_wef_wood_elves", {
             "wh_dlc05_wef_argwylon",
@@ -359,7 +409,6 @@ function hamskii_script()
             "wh_dlc08_nor_vanaheimlings"
         });
         cm:force_confederation("wh_dlc08_nor_norsca","wh_main_nor_skaeling");
-        cm:force_make_peace("wh_dlc08_nor_wintertooth", "wh_dlc08_nor_goromadny_tribe");
         vassalise("wh_dlc08_nor_wintertooth", {
             "wh_dlc08_nor_goromadny_tribe",
             "wh_main_nor_varg",
