@@ -188,6 +188,7 @@ function hamskii_script()
         -- Start by putting all the factions that need to be at war with each other, at war with each other
         -- Do this before any calls to force_make_vassal to avoid running into a mess with factions asking allies to join
 
+        cm:force_alliance("wh_main_emp_empire", "wh_main_dwf_dwarfs");
         preserve_vassal_master_rules("wh_main_emp_empire", {
             "wh_main_emp_middenland",
             "wh_main_emp_averland",
@@ -262,6 +263,7 @@ function hamskii_script()
             "wh2_main_def_cult_of_excess",
             "wh2_main_def_deadwood_sentinels",
             "wh2_main_def_har_ganeth",
+            "wh2_main_def_hag_graef",
             "wh2_main_def_karond_kar",
             "wh2_main_def_scourge_of_khaine",
             "wh2_main_def_the_forgebound"
@@ -360,6 +362,7 @@ function hamskii_script()
         cm:force_make_peace("wh_dlc08_nor_wintertooth", "wh_dlc08_nor_goromadny_tribe");
         vassalise("wh_dlc08_nor_wintertooth", {
             "wh_dlc08_nor_goromadny_tribe",
+            "wh_main_nor_varg",
             "wh_dlc08_nor_naglfarlings"
         });
 
