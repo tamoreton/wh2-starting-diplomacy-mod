@@ -85,10 +85,9 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
                                     out("Making diplomacy available between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction_key .. "]");
                                     cm:make_diplomacy_available(vassal_faction_key, other_vassal_faction_key);
                                      -- Crashes revealing wh2_main_def_har_ganeth's regions to wh2_main_def_ghrond for some reason
-                                    -- establish_diplomatic_contact_and_reveal_regions(vassal_faction_key, other_vassal_faction_key);
+                                    establish_diplomatic_contact_and_reveal_regions(vassal_faction_key, other_vassal_faction_key);
 
                                     if vassal_faction:at_war_with(other_vassal_faction) then
-
                                         out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction .. "]");
                                         cm:force_make_peace(vassal_faction_key, other_vassal_faction);
                                     end;
@@ -125,13 +124,9 @@ local function vassalise(master_faction_key, vassal_faction_keys)
         player_2 = cm:get_faction(human_factions[2]);
     end;
 
-    local regions_to_make_visible = {};
-
     for i = 1, #vassal_faction_keys do
         local vassal_faction_key = vassal_faction_keys[i];
         local vassal_faction = cm:get_faction(vassal_faction_key);
-
-        table.insert(regions_to_make_visible, vassal_faction:region_list());
 
         if vassal_faction == player_1 or vassal_faction == player_2 then
             out("force_alliance called, faction_key_1: " .. master_faction_key .. ", faction_key_2: " .. vassal_faction_key);
@@ -142,14 +137,6 @@ local function vassalise(master_faction_key, vassal_faction_keys)
             cm:force_make_vassal(master_faction_key, vassal_faction_key);
         end;
     end;
-
-    --[[
-    for i = 1, #vassal_faction_keys do
-        for j = 0, regions_to_make_visible:num_items() - 1 do
-            cm:make_region_seen_in_shroud(vassal_faction_keys[i], regions_to_make_visible:item_at(j):name());
-        end;
-    end;
-    --]]
 end;
 
 local function create_alliance_network(faction_keys)
@@ -193,31 +180,6 @@ function hamskii_script()
         -- Start by putting all the factions that need to be at war with each other, at war with each other
         -- Do this before any calls to force_make_vassal to avoid running into a mess with factions asking allies to join
 
-        cm:force_alliance("wh_main_emp_empire", "wh_main_dwf_dwarfs", true);
-        preserve_vassal_master_rules("wh_main_emp_empire", {
-            "wh_main_emp_middenland",
-            "wh_main_emp_averland",
-            "wh_main_emp_talabecland",
-            "wh_main_emp_ostland",
-            "wh_main_emp_nordland",
-            "wh_main_emp_hochland",
-            "wh_main_emp_ostermark",
-            "wh_main_emp_stirland",
-            "wh_main_emp_wissenland"
-        });
-
-        preserve_vassal_master_rules("wh_main_dwf_dwarfs", {
-            "wh_main_dwf_barak_varr",
-            "wh_main_dwf_karak_azul",
-            "wh_main_dwf_karak_hirn",
-            "wh_main_dwf_karak_izor",
-            "wh_main_dwf_karak_kadrin",
-            "wh_main_dwf_karak_norn",
-            "wh_main_dwf_karak_ziflin",
-            "wh_main_dwf_zhufbar",
-            "wh2_main_dwf_greybeards_prospectors"
-        });
-
         cm:force_declare_war("wh_main_vmp_schwartzhafen", "wh_main_vmp_vampire_counts", false, false);
 
         cm:force_declare_war("wh_main_grn_greenskins", "wh_main_ksl_kislev", false, false);
@@ -246,13 +208,100 @@ function hamskii_script()
                     local test_1 = (greenskin_faction_key_1 == "wh_main_grn_greenskins") and (greenskin_faction_key_2 == "wh_main_grn_orcs_of_the_bloody_hand");
                     local test_2 = (greenskin_faction_key_1 == "wh_main_grn_greenskins") and (greenskin_faction_key_2 == "wh_main_grn_crooked_moon");
                     local test_3 = (greenskin_faction_key_1 == "wh_main_grn_orcs_of_the_bloody_hand") and (greenskin_faction_key_2 == "wh_main_grn_crooked_moon");
-                    if not test_1 or not test_2 or not test_3 then
+                    local test_4 = (greenskin_faction_key_1 == "wh_main_grn_orcs_of_the_bloody_hand") and (greenskin_faction_key_2 == "wh_main_grn_greenskins");
+                    local test_5 = (greenskin_faction_key_1 == "wh_main_grn_crooked_moon") and (greenskin_faction_key_2 == "wh_main_grn_greenskins");
+                    local test_6 = (greenskin_faction_key_1 == "wh_main_grn_crooked_moon") and (greenskin_faction_key_2 == "wh_main_grn_orcs_of_the_bloody_hand");
+                    if not test_1 or not test_2 or not test_3 or not test_4 or not test_5 or not test_6 then
                         cm:force_declare_war(greenskin_faction_key_1, greenskin_faction_key_2, false, false);
                     end;
                 end;
             end;
         end;
+
+        cm:transfer_region_to_faction("wh_main_trollheim_mountains_bay_of_blades", "wh_dlc08_nor_naglfarlings");
+        cm:transfer_region_to_faction("wh_main_trollheim_mountains_sarl_encampment", "wh_dlc08_nor_naglfarlings");
+        cm:transfer_region_to_faction("wh_main_trollheim_mountains_the_tower_of_khrakk", "wh_dlc08_nor_naglfarlings");
+        cm:transfer_region_to_faction("wh_main_mountains_of_hel_altar_of_spawns", "wh_dlc08_nor_wintertooth");
+        cm:transfer_region_to_faction("wh_main_mountains_of_hel_aeslings_conclave", "wh_dlc08_nor_wintertooth");
+        cm:force_declare_war("wh_dlc08_nor_norsca", "wh_dlc08_nor_wintertooth", false, false);
+        cm:force_declare_war("wh_dlc08_nor_wintertooth", "wh_main_ksl_kislev", false, false);
+        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_aghol", false, false);
+        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_mung", false, false);
+        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_skeggi", false, false);
+
+        establish_diplomatic_contact_and_reveal_regions("wh2_main_skv_clan_mors", "wh_main_grn_necksnappers");
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_necksnappers", false, false);
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_crooked_moon", false, false);
+        cm:force_diplomacy("faction:wh2_main_skv_clan_mors", "faction:wh_main_grn_crooked_moon", "peace", false, false, true);
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_dwf_karak_izor", false, false);
+        cm:force_diplomacy("faction:wh2_main_skv_clan_mors", "faction:wh_main_dwf_karak_izor", "peace", false, false, true);
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_red_fangs", false, false);
+        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_dwf_karak_azul", false, false);
+
+        cm:force_alliance("wh_main_emp_empire", "wh_main_dwf_dwarfs", true);
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_grunburg");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_eilhart");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_helmgart");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_marienburg");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_gorssel");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_castle_drakenhof");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_eschen");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_waldenhof");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_castle_templehof");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_fort_oberstyre");
+        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_schwartzhafen");
+
+        establish_diplomatic_contact_and_reveal_regions("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_northern_worlds_edge_mountains_karak_ungor");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_rib_peaks_mount_gunbad");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_death_pass_karak_drazh");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_western_badlands_ekrund");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_eastern_badlands_karak_eight_peaks");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_blightwater_karak_azgal");
+        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_southern_badlands_galbaraz");
+
+        cm:make_diplomacy_available("wh_main_vmp_schwartzhafen", "wh_main_vmp_mousillon");
+        cm:transfer_region_to_faction("wh_main_eastern_sylvania_eschen", "wh_main_vmp_vampire_counts");
+        cm:transfer_region_to_faction("wh_main_eastern_sylvania_waldenhof", "wh_main_vmp_vampire_counts");
+        cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
+        cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
+
         cm:force_alliance("wh_main_grn_greenskins", "wh_main_grn_orcs_of_the_bloody_hand", true);
+
+        cm:transfer_region_to_faction("wh_main_death_pass_karak_drazh", "wh_main_grn_red_fangs");
+        cm:transfer_region_to_faction("wh_main_western_badlands_ekrund", "wh_main_grn_teef_snatchaz");
+        cm:force_confederation("wh_main_grn_greenskins", "wh_main_grn_red_eye");
+        cm:force_confederation("wh_main_grn_crooked_moon","wh_main_grn_necksnappers");
+        cm:force_confederation("wh_main_grn_orcs_of_the_bloody_hand", "wh2_main_grn_arachnos");
+
+        cm:force_confederation("wh_dlc08_nor_norsca","wh_main_nor_skaeling");
+
+        cm:force_confederation("wh2_main_def_har_ganeth", "wh2_main_def_ghrond");
+        cm:force_confederation("wh2_main_def_cult_of_pleasure", "wh2_main_def_ssildra_tor");
+
+        preserve_vassal_master_rules("wh_main_emp_empire", {
+            "wh_main_emp_middenland",
+            "wh_main_emp_averland",
+            "wh_main_emp_talabecland",
+            "wh_main_emp_ostland",
+            "wh_main_emp_nordland",
+            "wh_main_emp_hochland",
+            "wh_main_emp_ostermark",
+            "wh_main_emp_stirland",
+            "wh_main_emp_wissenland"
+        });
+
+        preserve_vassal_master_rules("wh_main_dwf_dwarfs", {
+            "wh_main_dwf_barak_varr",
+            "wh_main_dwf_karak_azul",
+            "wh_main_dwf_karak_hirn",
+            "wh_main_dwf_karak_izor",
+            "wh_main_dwf_karak_kadrin",
+            "wh_main_dwf_karak_norn",
+            "wh_main_dwf_karak_ziflin",
+            "wh_main_dwf_zhufbar",
+            "wh2_main_dwf_greybeards_prospectors"
+        });
 
         preserve_vassal_master_rules("wh_dlc05_wef_wood_elves", {
             "wh_dlc05_wef_argwylon",
@@ -272,16 +321,6 @@ function hamskii_script()
             "wh2_main_brt_thegans_crusaders"
         });
 
-        cm:transfer_region_to_faction("wh_main_trollheim_mountains_bay_of_blades", "wh_dlc08_nor_naglfarlings");
-        cm:transfer_region_to_faction("wh_main_trollheim_mountains_sarl_encampment", "wh_dlc08_nor_naglfarlings");
-        cm:transfer_region_to_faction("wh_main_trollheim_mountains_the_tower_of_khrakk", "wh_dlc08_nor_naglfarlings");
-        cm:transfer_region_to_faction("wh_main_mountains_of_hel_altar_of_spawns", "wh_dlc08_nor_wintertooth");
-        cm:transfer_region_to_faction("wh_main_mountains_of_hel_aeslings_conclave", "wh_dlc08_nor_wintertooth");
-        cm:force_declare_war("wh_dlc08_nor_norsca", "wh_dlc08_nor_wintertooth", false, false);
-        cm:force_declare_war("wh_dlc08_nor_wintertooth", "wh_main_ksl_kislev", false, false);
-        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_aghol", false, false);
-        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_mung", false, false);
-        cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_skeggi", false, false);
         preserve_vassal_master_rules("wh_dlc08_nor_norsca", {
             "wh_dlc08_nor_helspire_tribe",
             "wh_dlc08_nor_vanaheimlings"
@@ -294,7 +333,6 @@ function hamskii_script()
 
         preserve_vassal_master_rules("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
 
-        cm:force_confederation("wh2_main_def_har_ganeth", "wh2_main_def_ghrond");
         preserve_vassal_master_rules("wh2_main_def_naggarond", {
             "wh2_main_def_cult_of_pleasure",
             "wh2_main_def_bleak_holds",
@@ -309,15 +347,6 @@ function hamskii_script()
         });
 
         preserve_vassal_master_rules("wh2_main_lzd_hexoatl", { "wh2_main_lzd_last_defenders" });
-
-        establish_diplomatic_contact_and_reveal_regions("wh2_main_skv_clan_mors", "wh_main_grn_necksnappers");
-        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_necksnappers", false, false);
-        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_crooked_moon", false, false);
-        -- cm:force_diplomacy("faction:wh2_main_skv_clan_mors", "faction:wh_main_grn_crooked_moon", "peace", false, false, true);
-        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_dwf_karak_izor", false, false);
-        -- cm:force_diplomacy("faction:wh2_main_skv_clan_mors", "faction:wh_main_dwf_karak_izor", "peace", false, false, true);
-        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_grn_red_fangs", false, false);
-        cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_dwf_karak_azul", false, false);
 
         preserve_vassal_master_rules("wh2_dlc09_tmb_khemri",
         {
@@ -340,18 +369,6 @@ function hamskii_script()
             "wh_main_emp_wissenland"
         });
 
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_grunburg");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_eilhart");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_helmgart");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_marienburg");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_gorssel");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_castle_drakenhof");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_eschen");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_waldenhof");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_castle_templehof");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_fort_oberstyre");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_schwartzhafen");
-
         vassalise("wh_main_dwf_dwarfs", {
             "wh_main_dwf_barak_varr",
             "wh_main_dwf_karak_azul",
@@ -363,27 +380,6 @@ function hamskii_script()
             "wh_main_dwf_zhufbar",
             "wh2_main_dwf_greybeards_prospectors"
         });
-
-        establish_diplomatic_contact_and_reveal_regions("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_northern_worlds_edge_mountains_karak_ungor");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_rib_peaks_mount_gunbad");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_death_pass_karak_drazh");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_western_badlands_ekrund");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_eastern_badlands_karak_eight_peaks");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_blightwater_karak_azgal");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_southern_badlands_galbaraz");
-
-        cm:make_diplomacy_available("wh_main_vmp_schwartzhafen", "wh_main_vmp_mousillon");
-        cm:transfer_region_to_faction("wh_main_eastern_sylvania_eschen", "wh_main_vmp_vampire_counts");
-        cm:transfer_region_to_faction("wh_main_eastern_sylvania_waldenhof", "wh_main_vmp_vampire_counts");
-        cm:transfer_region_to_faction("wh_main_western_sylvania_castle_templehof", "wh_main_vmp_schwartzhafen");
-        cm:transfer_region_to_faction("wh_main_western_sylvania_fort_oberstyre", "wh_main_vmp_schwartzhafen");
-
-        cm:transfer_region_to_faction("wh_main_death_pass_karak_drazh", "wh_main_grn_red_fangs");
-        cm:transfer_region_to_faction("wh_main_western_badlands_ekrund", "wh_main_grn_teef_snatchaz");
-        cm:force_confederation("wh_main_grn_greenskins", "wh_main_grn_red_eye");
-        cm:force_confederation("wh_main_grn_crooked_moon","wh_main_grn_necksnappers");
-        cm:force_confederation("wh_main_grn_orcs_of_the_bloody_hand", "wh2_main_grn_arachnos");
 
         vassalise("wh_dlc05_wef_wood_elves", {
             "wh_dlc05_wef_argwylon",
@@ -408,7 +404,8 @@ function hamskii_script()
             "wh_dlc08_nor_helspire_tribe",
             "wh_dlc08_nor_vanaheimlings"
         });
-        cm:force_confederation("wh_dlc08_nor_norsca","wh_main_nor_skaeling");
+
+
         vassalise("wh_dlc08_nor_wintertooth", {
             "wh_dlc08_nor_goromadny_tribe",
             "wh_main_nor_varg",
@@ -433,7 +430,6 @@ function hamskii_script()
         --]]
         vassalise("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
 
-        cm:force_confederation("wh2_main_def_cult_of_pleasure", "wh2_main_def_ssildra_tor");
         vassalise("wh2_main_def_naggarond", {
             "wh2_main_def_cult_of_pleasure",
             "wh2_main_def_bleak_holds",
