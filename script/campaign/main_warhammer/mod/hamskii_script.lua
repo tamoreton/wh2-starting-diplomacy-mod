@@ -142,8 +142,17 @@ end;
 local function create_alliance_network(faction_keys)
     out("create_alliance_network() called, faction_keys: " .. tostring(faction_keys));
     for _, faction_key_1 in ipairs(faction_keys) do
+        local faction_1 = cm:get_faction(faction_key_1)
+
         for _, faction_key_2 in ipairs(faction_keys) do
+            local faction_2 = cm:get_faction(faction_key_2);
+
             if faction_key_1 ~= faction_key_2 then
+                if faction_1:at_war_with(faction_2) then
+                    out("Forcing peace between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
+                    cm:force_make_peace(faction_1, faction_2);
+                end;
+
                 out("Forcing alliance between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
                 cm:force_alliance(faction_key_1, faction_key_2, true);
             end;
@@ -161,14 +170,7 @@ local function create_diplomatic_contact_network(faction_keys)
 
         for _, faction_key_2 in ipairs(faction_keys) do
             if faction_key_1 ~= faction_key_2 then
-                --[[
-                for i = 0, regions_to_make_visible:num_items() - 1 do
-                    cm:make_region_seen_in_shroud(faction_key_2, regions_to_make_visible:item_at(i):name());
-                end;
-                --]]
-
-                out("Making diplomacy available between [" .. faction_key_1 .. "] and [" .. faction_key_2 .. "]");
-                cm:make_diplomacy_available(faction_key_1, faction_key_2);
+                establish_diplomatic_contact_and_reveal_regions(faction_key_1, faction_key_2);
             end;
         end;
     end;
@@ -348,6 +350,8 @@ function hamskii_script()
 
         preserve_vassal_master_rules("wh2_main_lzd_hexoatl", { "wh2_main_lzd_last_defenders" });
 
+        preserve_vassal_master_rules("wh2_main_skv_clan_pestilens", { "wh2_main_skv_clan_septik" });
+
         preserve_vassal_master_rules("wh2_dlc09_tmb_khemri",
         {
             "wh2_dlc09_tmb_lybaras",
@@ -412,23 +416,22 @@ function hamskii_script()
             "wh_dlc08_nor_naglfarlings"
         });
 
-        --[[
         create_alliance_network({
-            "wh2_main_hef_eataine",
-            "wh2_main_hef_caledor",
-            "wh2_main_hef_avelorn",
-            "wh2_main_hef_ellyrion",
-            "wh2_main_hef_saphery",
+            "wh2_main_hef_eataine", -- Inner
+            "wh2_main_hef_caledor", -- Inner
+            "wh2_main_hef_avelorn", -- Inner
+            "wh2_main_hef_ellyrion", -- Inner
+            "wh2_main_hef_saphery", -- Inner
+            "wh2_main_hef_tiranoc", -- Outer
+            "wh2_main_hef_nagarythe", -- Outer
+            "wh2_main_hef_chrace", -- Outer
+            "wh2_main_hef_cothique", -- Outer
+            "wh2_main_hef_yvresse" -- Outer
         });
-        create_alliance_network({
-            "wh2_main_hef_tiranoc",
-            "wh2_main_hef_nagarythe",
-            "wh2_main_hef_chrace",
-            "wh2_main_hef_cothique",
-            "wh2_main_hef_yvresse"
-        });
-        --]]
+
         vassalise("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
+        -- establish_diplomatic_contact_and_reveal_regions("wh2_main_hef_eataine", "wh2_main_hef_order_of_loremasters");
+        -- establish_diplomatic_contact_and_reveal_regions("wh2_main_hef_avelorn", "wh2_main_hef_order_of_loremasters");
 
         vassalise("wh2_main_def_naggarond", {
             "wh2_main_def_cult_of_pleasure",
@@ -442,7 +445,7 @@ function hamskii_script()
             "wh2_main_def_scourge_of_khaine",
             "wh2_main_def_the_forgebound"
         });
-        --[[
+
         create_alliance_network({
             "wh2_main_lzd_hexoatl",
             "wh2_main_lzd_itza",
@@ -450,9 +453,9 @@ function hamskii_script()
             "wh2_main_lzd_tlaxtlan",
             "wh2_main_lzd_xlanhuapec"
         });
-        --]]
+
         vassalise("wh2_main_lzd_hexoatl", { "wh2_main_lzd_last_defenders" });
-        --[[
+
         create_diplomatic_contact_network({
             "wh2_main_skv_clan_mors",
             "wh2_dlc09_skv_clan_rictus",
@@ -461,7 +464,8 @@ function hamskii_script()
             "wh2_main_skv_clan_skyre",
             "wh2_main_skv_clan_eshin",
             "wh2_main_skv_clan_moulder",
-            "wh2_main_skv_clan_pestilens"
+            "wh2_main_skv_clan_pestilens",
+            "wh2_main_skv_clan_septik"
         });
         create_alliance_network({
             "wh2_main_skv_clan_skyre",
@@ -469,7 +473,8 @@ function hamskii_script()
             "wh2_main_skv_clan_moulder",
             "wh2_main_skv_clan_pestilens"
         });
-        --]]
+        vassalise("wh2_main_skv_clan_pestilens", { "wh2_main_skv_clan_septik" });
+
         vassalise("wh2_dlc09_tmb_khemri",
         {
             "wh2_dlc09_tmb_lybaras",
@@ -478,7 +483,7 @@ function hamskii_script()
             "wh2_dlc09_tmb_dune_kingdoms",
             "wh2_dlc09_tmb_rakaph_dynasty",
         });
-        --[[
+
         create_diplomatic_contact_network({
             "wh2_dlc09_tmb_followers_of_nagash",
             "wh2_main_vmp_necrarch_brotherhood",
@@ -486,7 +491,7 @@ function hamskii_script()
             "wh2_main_vmp_the_silver_host",
             "wh_main_vmp_schwartzhafen"
         });
-        --]]
+
     end;
     out("hamskii_script() complete");
 end;
