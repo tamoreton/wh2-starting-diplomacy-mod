@@ -51,6 +51,21 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
             cm:force_make_peace(master_faction_key, vassal_faction_key);
         end;
 
+        for i = 1, #vassal_faction_keys do
+            local other_vassal_faction_key = vassal_faction_keys[i];
+            local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
+
+            out("Making diplomacy available between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction_key .. "]");
+            cm:make_diplomacy_available(vassal_faction_key, other_vassal_faction_key);
+             -- Crashes revealing wh2_main_def_har_ganeth's regions to wh2_main_def_ghrond for some reason
+            establish_diplomatic_contact_and_reveal_regions(vassal_faction_key, other_vassal_faction_key);
+
+            if vassal_faction:at_war_with(other_vassal_faction) then
+                out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction .. "]");
+                cm:force_make_peace(vassal_faction_key, other_vassal_faction);
+            end;
+        end;
+
         if vassal_faction ~= player_1 or vassal_faction ~= player_2 then
             -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
             local vassal_enemies = {};
@@ -69,41 +84,31 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
                         out("vassal_faction_key: " .. vassal_faction_key);
                         out("vassal_enemy_name: " .. vassal_enemy_name);
 
+                        --[[ May be redundant and causing bugs...actually maybe not but let's keep it commented out anyways
                         if has_value(vassal_faction_keys, vassal_enemy_name) then
                             out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
                             cm:force_make_peace(vassal_faction_key, vassal_enemy_name);
                         end;
+                        --]]
 
                         if not vassal_enemy:is_ally_vassal_or_client_state_of(player_1) and not (player_2 and vassal_enemy:is_ally_vassal_or_client_state_of(player_2)) then
+                            if not has_value(vassal_faction_keys, vassal_enemy_name) and master_faction_key ~= vassal_enemy_name then
+                                out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                                cm:force_declare_war(master_faction_key, vassal_enemy_name, true, true);
+                            end;
+
                             -- go through all vassalised factions as one vassal might not have the same enemies as another
                             -- all factions should be at war with the same set after this
                             for k = 1, #vassal_faction_keys do
+                                local other_vassal_faction_key = vassal_faction_keys[k];
+                                local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
+
                                 if vassal_faction_keys[k] ~= vassal_faction_key then
-                                    local other_vassal_faction_key = vassal_faction_keys[k];
-                                    local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
-
-                                    out("Making diplomacy available between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction_key .. "]");
-                                    cm:make_diplomacy_available(vassal_faction_key, other_vassal_faction_key);
-                                     -- Crashes revealing wh2_main_def_har_ganeth's regions to wh2_main_def_ghrond for some reason
-                                    establish_diplomatic_contact_and_reveal_regions(vassal_faction_key, other_vassal_faction_key);
-
-                                    if vassal_faction:at_war_with(other_vassal_faction) then
-                                        out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction .. "]");
-                                        cm:force_make_peace(vassal_faction_key, other_vassal_faction);
-                                    end;
-
-
                                     if not other_vassal_faction:at_war_with(vassal_enemy) then
                                         out("Forcing war between [" .. other_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
                                         cm:force_declare_war(other_vassal_faction_key, vassal_enemy_name, true, true);
                                     end;
-
                                 end;
-                            end;
-
-                            if not has_value(vassal_faction_keys, vassal_enemy_name) and master_faction_key ~= vassal_enemy_name then
-                                out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
-                                cm:force_declare_war(master_faction_key, vassal_enemy_name, true, true);
                             end;
                         end;
                     end;
@@ -225,7 +230,7 @@ function hamskii_script()
         cm:transfer_region_to_faction("wh_main_trollheim_mountains_the_tower_of_khrakk", "wh_dlc08_nor_naglfarlings");
         cm:transfer_region_to_faction("wh_main_mountains_of_hel_altar_of_spawns", "wh_dlc08_nor_wintertooth");
         cm:transfer_region_to_faction("wh_main_mountains_of_hel_aeslings_conclave", "wh_dlc08_nor_wintertooth");
-        cm:force_declare_war("wh_dlc08_nor_norsca", "wh_dlc08_nor_wintertooth", false, false);
+        --cm:force_declare_war("wh_dlc08_nor_norsca", "wh_dlc08_nor_wintertooth", false, false);
         cm:force_declare_war("wh_dlc08_nor_wintertooth", "wh_main_ksl_kislev", false, false);
         cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_aghol", false, false);
         cm:force_declare_war("wh_dlc08_nor_norsca", "wh2_main_nor_mung", false, false);
@@ -429,9 +434,9 @@ function hamskii_script()
             "wh2_main_hef_yvresse" -- Outer
         });
 
-        vassalise("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
         -- establish_diplomatic_contact_and_reveal_regions("wh2_main_hef_eataine", "wh2_main_hef_order_of_loremasters");
         -- establish_diplomatic_contact_and_reveal_regions("wh2_main_hef_avelorn", "wh2_main_hef_order_of_loremasters");
+        vassalise("wh2_main_hef_saphery", { "wh2_main_hef_order_of_loremasters" });
 
         vassalise("wh2_main_def_naggarond", {
             "wh2_main_def_cult_of_pleasure",
@@ -492,6 +497,13 @@ function hamskii_script()
             "wh_main_vmp_schwartzhafen"
         });
 
+        vassalise("wh2_dlc09_tmb_followers_of_nagash",
+        {
+            "wh2_dlc09_tmb_followers_of_nagash",
+            "wh2_main_vmp_necrarch_brotherhood",
+            "wh2_main_vmp_strygos_empire",
+            "wh2_main_vmp_the_silver_host"
+        });
     end;
     out("hamskii_script() complete");
 end;
