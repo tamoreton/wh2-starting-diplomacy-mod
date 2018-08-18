@@ -17,7 +17,7 @@ local function establish_diplomatic_contact_and_reveal_regions(playerable_factio
     local npc_faction_regions = npc_faction:region_list();
 
     for i = 0, npc_faction_regions:num_items() - 1 do
-        cm:make_region_seen_in_shroud(playerable_faction_key, npc_faction_regions:item_at(i):name());
+        --cm:make_region_seen_in_shroud(playerable_faction_key, npc_faction_regions:item_at(i):name());
     end;
 end;
 
@@ -57,7 +57,6 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
 
             out("Making diplomacy available between [" .. vassal_faction_key .. "] and [" .. other_vassal_faction_key .. "]");
             cm:make_diplomacy_available(vassal_faction_key, other_vassal_faction_key);
-             -- Crashes revealing wh2_main_def_har_ganeth's regions to wh2_main_def_ghrond for some reason
             establish_diplomatic_contact_and_reveal_regions(vassal_faction_key, other_vassal_faction_key);
 
             if vassal_faction:at_war_with(other_vassal_faction) then
