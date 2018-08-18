@@ -26,14 +26,6 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
 
     local master_faction = cm:get_faction(master_faction_key);
 
-    local human_factions = cm:get_human_factions();
-    local player_1 = cm:get_faction(human_factions[1]);
-    local player_2 = nil;
-    -- only get player 2 if one exists
-    if cm:is_multiplayer() then
-        player_2 = cm:get_faction(human_factions[2]);
-    end;
-
     for h = 1, #vassal_faction_keys do
         if not is_string(vassal_faction_keys[h]) then
 		    script_error("ERROR: hamskii_script() called but item [" .. h .. "] in supplied list of faction keys is not a string; its value is [" .. tostring(vassal_faction_keys[h]) .. "]");
@@ -65,49 +57,45 @@ local function preserve_vassal_master_rules(master_faction_key, vassal_faction_k
             end;
         end;
 
-        if vassal_faction ~= player_1 or vassal_faction ~= player_2 then
-            -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
-            local vassal_enemies = {};
+        -- force war between master faction and any of vassal faction enemies so vassal/master rules are preserved
+        local vassal_enemies = {};
 
-            table.insert(vassal_enemies, vassal_faction:factions_at_war_with());
+        table.insert(vassal_enemies, vassal_faction:factions_at_war_with());
 
-            -- declare war on all enemies of master's vassals unless they are allied with a player faction
-            for i = 1, #vassal_enemies do
-                if vassal_enemies[i] and not vassal_enemies[i]:is_empty() then
-                    for j = 0, vassal_enemies[i]:num_items() - 1 do
-                        local vassal_enemy = vassal_enemies[i]:item_at(j);
-                        local vassal_enemy_name = vassal_enemy:name();
+        -- declare war on all enemies of master's vassals unless they are allied with a player faction
+        for i = 1, #vassal_enemies do
+            if vassal_enemies[i] and not vassal_enemies[i]:is_empty() then
+                for j = 0, vassal_enemies[i]:num_items() - 1 do
+                    local vassal_enemy = vassal_enemies[i]:item_at(j);
+                    local vassal_enemy_name = vassal_enemy:name();
 
-                        -- Need to figure out why Bretonnia goes to war with Karak Ziflin but not other Dwarf factions
-                        -- Also, Karak Norn with Wood Elves
-                        out("vassal_faction_key: " .. vassal_faction_key);
-                        out("vassal_enemy_name: " .. vassal_enemy_name);
+                    -- Need to figure out why Bretonnia goes to war with Karak Ziflin but not other Dwarf factions
+                    -- Also, Karak Norn with Wood Elves
+                    out("vassal_faction_key: " .. vassal_faction_key);
+                    out("vassal_enemy_name: " .. vassal_enemy_name);
 
-                        --[[ May be redundant and causing bugs...actually maybe not but let's keep it commented out anyways
-                        if has_value(vassal_faction_keys, vassal_enemy_name) then
-                            out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
-                            cm:force_make_peace(vassal_faction_key, vassal_enemy_name);
-                        end;
-                        --]]
+                    --[[ May be redundant and causing bugs...actually maybe not but let's keep it commented out anyways
+                    if has_value(vassal_faction_keys, vassal_enemy_name) then
+                        out("Forcing peace between [" .. vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                        cm:force_make_peace(vassal_faction_key, vassal_enemy_name);
+                    end;
+                    --]]
 
-                        if not vassal_enemy:is_ally_vassal_or_client_state_of(player_1) and not (player_2 and vassal_enemy:is_ally_vassal_or_client_state_of(player_2)) then
-                            if not has_value(vassal_faction_keys, vassal_enemy_name) and master_faction_key ~= vassal_enemy_name then
-                                out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
-                                cm:force_declare_war(master_faction_key, vassal_enemy_name, true, true);
-                            end;
+                    if not has_value(vassal_faction_keys, vassal_enemy_name) and master_faction_key ~= vassal_enemy_name then
+                        out("Forcing war between [" .. master_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                        cm:force_declare_war(master_faction_key, vassal_enemy_name, true, true);
+                    end;
 
-                            -- go through all vassalised factions as one vassal might not have the same enemies as another
-                            -- all factions should be at war with the same set after this
-                            for k = 1, #vassal_faction_keys do
-                                local other_vassal_faction_key = vassal_faction_keys[k];
-                                local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
+                    -- go through all vassalised factions as one vassal might not have the same enemies as another
+                    -- all factions should be at war with the same set after this
+                    for k = 1, #vassal_faction_keys do
+                        local other_vassal_faction_key = vassal_faction_keys[k];
+                        local other_vassal_faction = cm:get_faction(other_vassal_faction_key);
 
-                                if vassal_faction_keys[k] ~= vassal_faction_key then
-                                    if not other_vassal_faction:at_war_with(vassal_enemy) then
-                                        out("Forcing war between [" .. other_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
-                                        cm:force_declare_war(other_vassal_faction_key, vassal_enemy_name, true, true);
-                                    end;
-                                end;
+                        if vassal_faction_keys[k] ~= vassal_faction_key then
+                            if not other_vassal_faction:at_war_with(vassal_enemy) then
+                                out("Forcing war between [" .. other_vassal_faction_key .. "] and [" .. vassal_enemy_name .. "]");
+                                cm:force_declare_war(other_vassal_faction_key, vassal_enemy_name, true, true);
                             end;
                         end;
                     end;
