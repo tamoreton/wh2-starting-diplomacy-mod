@@ -17,8 +17,10 @@ local function establish_diplomatic_contact_and_reveal_regions(playerable_factio
     local npc_faction_regions = npc_faction:region_list();
 
     for i = 0, npc_faction_regions:num_items() - 1 do
-        --cm:make_region_seen_in_shroud(playerable_faction_key, npc_faction_regions:item_at(i):name());
-    end;
+		local curr_region = npc_faction_regions:item_at(i);
+
+		cm:make_region_visible_in_shroud(playerable_faction_key, curr_region:name());
+	end;
 end;
 
 local function preserve_vassal_master_rules(master_faction_key, vassal_faction_keys)
@@ -229,26 +231,26 @@ function hamskii_script()
         cm:force_declare_war("wh2_main_skv_clan_mors", "wh_main_dwf_karak_azul", false, false);
 
         cm:force_alliance("wh_main_emp_empire", "wh_main_dwf_dwarfs", true);
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_grunburg");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_eilhart");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_reikland_helmgart");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_marienburg");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_gorssel");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_castle_drakenhof");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_eschen");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_waldenhof");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_castle_templehof");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_fort_oberstyre");
-        cm:make_region_seen_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_schwartzhafen");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_reikland_grunburg");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_reikland_eilhart");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_reikland_helmgart");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_marienburg");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_the_wasteland_gorssel");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_castle_drakenhof");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_eschen");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_eastern_sylvania_waldenhof");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_castle_templehof");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_fort_oberstyre");
+        cm:make_region_visible_in_shroud("wh_main_emp_empire", "wh_main_western_sylvania_schwartzhafen");
 
         establish_diplomatic_contact_and_reveal_regions("wh_main_dwf_dwarfs", "wh_main_dwf_kraka_drak");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_northern_worlds_edge_mountains_karak_ungor");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_rib_peaks_mount_gunbad");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_death_pass_karak_drazh");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_western_badlands_ekrund");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_eastern_badlands_karak_eight_peaks");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_blightwater_karak_azgal");
-        cm:make_region_seen_in_shroud("wh_main_dwf_dwarfs", "wh_main_southern_badlands_galbaraz");
+        cm:make_region_visible_in_shroud("wh_main_dwf_dwarfs", "wh_main_northern_worlds_edge_mountains_karak_ungor");
+        cm:make_region_visible_in_shroud("wh_main_dwf_dwarfs", "wh_main_rib_peaks_mount_gunbad");
+        cm:make_region_visible_in_shroud("wh_main_dwf_dwarfs", "wh_main_death_pass_karak_drazh");
+        cm:make_region_visible_in_shroud("wh_main_dwf_dwarfs", "wh_main_western_badlands_ekrund");
+        cm:make_region_visible_in_shroud("wh_main_dwf_dwarfs", "wh_main_eastern_badlands_karak_eight_peaks");
+        cm:make_region_visible_in_shroud("wh_main_dwf_dwarfs", "wh_main_blightwater_karak_azgal");
+        cm:make_region_visible_in_shroud("wh_main_dwf_dwarfs", "wh_main_southern_badlands_galbaraz");
 
         cm:make_diplomacy_available("wh_main_vmp_schwartzhafen", "wh_main_vmp_mousillon");
         cm:transfer_region_to_faction("wh_main_eastern_sylvania_eschen", "wh_main_vmp_vampire_counts");
