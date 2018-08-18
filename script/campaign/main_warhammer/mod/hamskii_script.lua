@@ -169,10 +169,6 @@ local function create_diplomatic_contact_network(faction_keys)
     out("create_diplomatic_contact_network() called, faction_keys: " .. tostring(faction_keys));
 
     for _, faction_key_1 in ipairs(faction_keys) do
-        local faction_1 = cm:get_faction(faction_key_1);
-
-        local regions_to_make_visible = faction_1:region_list();
-
         for _, faction_key_2 in ipairs(faction_keys) do
             if faction_key_1 ~= faction_key_2 then
                 establish_diplomatic_contact_and_reveal_regions(faction_key_1, faction_key_2);
